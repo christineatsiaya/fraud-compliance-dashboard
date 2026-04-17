@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import apiClient from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -6,6 +6,7 @@ function Interventions() {
   const [interventions, setInterventions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filterPriority, setFilterPriority] = useState("ALL");
 
   useEffect(() => {
     const fetchInterventions = async () => {
@@ -22,6 +23,14 @@ function Interventions() {
 
     fetchInterventions();
   }, []);
+
+  // Filter interventions by priority
+  const filteredInterventions = useMemo(() => {
+    if (filterPriority === "ALL") return interventions;
+    return interventions.filter(
+      (intervention) => intervention.priority_level === filterPriority,
+    );
+  }, [interventions, filterPriority]);
 
   if (loading) {
     return (
@@ -45,8 +54,25 @@ function Interventions() {
     <div className="container mx-auto px-6 py-8">
       <h2 className="text-3xl font-bold mb-6">Recommended Interventions</h2>
 
+      {/* Priority Filter */}
+      <div className="mb-6 flex items-center gap-4">
+        <label className="text-sm font-medium text-gray-700">
+          Filter by Priority:
+        </label>
+        <select
+          value={filterPriority}
+          onChange={(e) => setFilterPriority(e.target.value)}
+          className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="ALL">All Priorities</option>
+          <option value="HIGH">High Priority</option>
+          <option value="MEDIUM">Medium Priority</option>
+          <option value="LOW">Low Priority</option>
+        </select>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {interventions.map((intervention) => (
+        {filteredInterventions.map((intervention) => (
           <div
             key={intervention.id}
             className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
@@ -100,7 +126,7 @@ function Interventions() {
         ))}
       </div>
 
-      {interventions.length === 0 && (
+      {filteredInterventions.length === 0 && (
         <div className="text-center py-12 text-gray-500">
           No interventions found.
         </div>
