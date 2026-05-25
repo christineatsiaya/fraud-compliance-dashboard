@@ -13,6 +13,9 @@ import toast, { Toaster } from "react-hot-toast";
 import apiClient from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
+import AiInsightCards from "../components/AiInsightCards";
+import ComplianceCopilot from "../components/ComplianceCopilot";
+import { buildAiInsightCards } from "../utils/copilot";
 import { buildExecutiveInsights } from "../utils/intelligence";
 
 const DEMO_RISK_SCORES = [
@@ -213,6 +216,11 @@ function RiskScores() {
     [filteredData],
   );
 
+  const aiInsights = useMemo(
+    () => buildAiInsightCards(filteredData),
+    [filteredData],
+  );
+
   if (loading) {
     return (
       <div className="container mx-auto px-6 py-8">
@@ -348,6 +356,8 @@ function RiskScores() {
           </div>
         </section>
       )}
+
+      <AiInsightCards insights={aiInsights} />
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -561,6 +571,8 @@ function RiskScores() {
           </div>
         </div>
       </section>
+
+      <ComplianceCopilot states={filteredData} selectedState={selectedState} />
 
       <StateDrilldownDrawer
         state={selectedState}
