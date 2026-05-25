@@ -15,6 +15,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
 import AiInsightCards from "../components/AiInsightCards";
 import ComplianceCopilot from "../components/ComplianceCopilot";
+import HistoricalTrendAnalysis from "../components/HistoricalTrendAnalysis";
 import { buildAiInsightCards } from "../utils/copilot";
 import { buildExecutiveInsights } from "../utils/intelligence";
 
@@ -468,6 +469,8 @@ function RiskScores() {
           )}
         </div>
       )}
+
+      <HistoricalTrendAnalysis states={sortedData} />
 
       {/* Table */}
       {sortedData.length > 0 && (
