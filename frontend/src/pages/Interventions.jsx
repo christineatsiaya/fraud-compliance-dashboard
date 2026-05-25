@@ -2,6 +2,15 @@ import { useState, useEffect, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import apiClient from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import OperationalAlertCenter from "../components/OperationalAlertCenter";
+import InterventionStatusControl from "../components/InterventionStatusControl";
+import InterventionAuditLog from "../components/InterventionAuditLog";
+import {
+  buildInitialAuditEvents,
+  buildInterventionWorkflow,
+  buildOperationalAlerts,
+  buildStatusAuditEvent,
+} from "../utils/operations";
 
 const DEMO_INTERVENTIONS = [
   {
@@ -57,15 +66,19 @@ function Interventions() {
   const [error, setError] = useState(null);
   const [usingDemoData, setUsingDemoData] = useState(false);
   const [filterPriority, setFilterPriority] = useState("ALL");
+  const [statusById, setStatusById] = useState({});
+  const [auditEvents, setAuditEvents] = useState([]);
 
   useEffect(() => {
     const fetchInterventions = async () => {
       try {
         const response = await apiClient.get("/interventions/");
         setInterventions(response.data);
+        setAuditEvents(buildInitialAuditEvents(response.data));
         setLoading(false);
       } catch (err) {
         setInterventions(DEMO_INTERVENTIONS);
+        setAuditEvents(buildInitialAuditEvents(DEMO_INTERVENTIONS));
         setUsingDemoData(true);
         setError(null);
         setLoading(false);
@@ -83,6 +96,16 @@ function Interventions() {
       (intervention) => intervention.priority_level === filterPriority,
     );
   }, [interventions, filterPriority]);
+
+  const workflowInterventions = useMemo(
+    () => buildInterventionWorkflow(filteredInterventions, statusById),
+    [filteredInterventions, statusById],
+  );
+
+  const operationalAlerts = useMemo(
+    () => buildOperationalAlerts(workflowInterventions),
+    [workflowInterventions],
+  );
 
   // Clear filters
   const handleClearFilters = () => {
@@ -136,6 +159,27 @@ function Interventions() {
 
   const hasActiveFilters = filterPriority !== "ALL";
 
+  const handleStatusChange = (intervention, nextStatus) => {
+    const currentStatus = intervention.status;
+
+    if (currentStatus === nextStatus) return;
+
+    setStatusById((current) => ({
+      ...current,
+      [intervention.id]: nextStatus,
+    }));
+    setAuditEvents((current) => [
+      ...current,
+      buildStatusAuditEvent({
+        intervention,
+        fromStatus: currentStatus,
+        toStatus: nextStatus,
+        sequence: current.length + 1,
+      }),
+    ]);
+    toast.success(`${intervention.state_code} moved to workflow status`);
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-6 py-8">
@@ -186,6 +230,8 @@ function Interventions() {
           Showing demo data because the live API is unavailable.
         </div>
       )}
+
+      <OperationalAlertCenter alerts={operationalAlerts} />
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -251,9 +297,9 @@ function Interventions() {
       </div>
 
       {/* Cards Grid */}
-      {filteredInterventions.length > 0 ? (
+      {workflowInterventions.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredInterventions.map((intervention) => (
+          {workflowInterventions.map((intervention) => (
             <div
               key={intervention.id}
               className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow"
@@ -302,6 +348,13 @@ function Interventions() {
                     {(intervention.confidence_score * 100).toFixed(0)}%
                   </p>
                 </div>
+
+                <InterventionStatusControl
+                  status={intervention.status}
+                  onChange={(nextStatus) =>
+                    handleStatusChange(intervention, nextStatus)
+                  }
+                />
               </div>
             </div>
           ))}
@@ -337,6 +390,8 @@ function Interventions() {
           )}
         </div>
       )}
+
+      <InterventionAuditLog events={auditEvents} />
     </div>
   );
 }
