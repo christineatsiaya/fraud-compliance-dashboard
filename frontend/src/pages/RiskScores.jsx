@@ -16,6 +16,7 @@ import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
 import AiInsightCards from "../components/AiInsightCards";
 import ComplianceCopilot from "../components/ComplianceCopilot";
 import HistoricalTrendAnalysis from "../components/HistoricalTrendAnalysis";
+import ScenarioForecasting from "../components/ScenarioForecasting";
 import { buildAiInsightCards } from "../utils/copilot";
 import { buildExecutiveInsights } from "../utils/intelligence";
 
@@ -471,6 +472,7 @@ function RiskScores() {
       )}
 
       <HistoricalTrendAnalysis states={sortedData} />
+      <ScenarioForecasting states={sortedData} />
 
       {/* Table */}
       {sortedData.length > 0 && (
