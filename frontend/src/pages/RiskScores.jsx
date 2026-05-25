@@ -12,6 +12,8 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import apiClient from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
+import { buildExecutiveInsights } from "../utils/intelligence";
 
 const DEMO_RISK_SCORES = [
   {
@@ -66,6 +68,7 @@ function RiskScores() {
   const [filterTier, setFilterTier] = useState("ALL");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedState, setSelectedState] = useState(null);
 
   useEffect(() => {
     const fetchRiskScores = async () => {
@@ -205,6 +208,11 @@ function RiskScores() {
     },
   ];
 
+  const executiveInsights = useMemo(
+    () => buildExecutiveInsights(filteredData),
+    [filteredData],
+  );
+
   if (loading) {
     return (
       <div className="container mx-auto px-6 py-8">
@@ -295,6 +303,50 @@ function RiskScores() {
         <div className="mb-6 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
           Showing demo data because the live API is unavailable.
         </div>
+      )}
+
+      {executiveInsights.length > 0 && (
+        <section className="mb-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">
+                Executive intelligence feed
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-950">
+                What leadership should notice
+              </h2>
+            </div>
+            <p className="text-sm text-slate-500">
+              Data-derived insights from the current filters
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {executiveInsights.map((insight) => (
+              <article
+                key={insight.title}
+                className="rounded-lg border border-slate-200 bg-slate-50 p-4"
+              >
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    insight.severity === "critical"
+                      ? "bg-red-100 text-red-800"
+                      : insight.severity === "stable"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {insight.severity}
+                </span>
+                <h3 className="mt-3 text-base font-semibold text-slate-950">
+                  {insight.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {insight.detail}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Summary Stats */}
@@ -446,7 +498,8 @@ function RiskScores() {
               {sortedData.map((score) => (
                 <tr
                   key={score.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="cursor-pointer hover:bg-blue-50 transition-colors"
+                  onClick={() => setSelectedState(score)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {score.state_code}
@@ -508,6 +561,12 @@ function RiskScores() {
           </div>
         </div>
       </section>
+
+      <StateDrilldownDrawer
+        state={selectedState}
+        states={riskScores}
+        onClose={() => setSelectedState(null)}
+      />
     </div>
   );
 }

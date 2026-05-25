@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import RiskScores from "./pages/RiskScores";
 import Interventions from "./pages/Interventions";
+import Methodology from "./pages/Methodology";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<RiskScores />} />
           <Route path="/interventions" element={<Interventions />} />
           <Route path="/about" element={<Home />} />
+          <Route path="/methodology" element={<Methodology />} />
         </Routes>
         <Footer />
       </div>

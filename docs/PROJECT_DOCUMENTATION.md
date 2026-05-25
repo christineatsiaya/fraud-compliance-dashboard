@@ -16,10 +16,12 @@ Users start on the Risk Scores dashboard so reviewers immediately see a working 
 
 The Risk Scores page fetches saved risk score records from the backend. Users can:
 
+- Review executive intelligence cards derived from the current dataset.
 - Filter by risk tier.
 - Search by state code.
 - Sort table columns.
 - Review a bar chart of risk score by state.
+- Click a state to open a drilldown drawer with peer rank, exposure, risk explanation, and recommended next action.
 - Export the current filtered view to CSV.
 
 ### 3. Review recommended interventions
@@ -41,9 +43,12 @@ Key files:
 - `frontend/src/App.jsx`: route definitions.
 - `frontend/src/components/Navbar.jsx`: global navigation.
 - `frontend/src/pages/Home.jsx`: About page with project explanation and dashboard entry links.
+- `frontend/src/pages/Methodology.jsx`: score formula, tier thresholds, assumptions, and limitations.
 - `frontend/src/pages/RiskScores.jsx`: risk score dashboard.
 - `frontend/src/pages/Interventions.jsx`: intervention recommendation dashboard.
 - `frontend/src/services/api.js`: shared Axios client.
+- `frontend/src/utils/intelligence.js`: deterministic helpers for executive insight cards and state drilldown explanations.
+- `frontend/src/components/StateDrilldownDrawer.jsx`: state-level investigation panel.
 
 The frontend uses Tailwind CSS utility classes for layout and visual styling. `api.js` reads `VITE_API_BASE_URL` and defaults to `http://localhost:8000`.
 

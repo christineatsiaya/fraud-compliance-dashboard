@@ -22,6 +22,14 @@ A full-stack fraud compliance intelligence platform built with React, FastAPI, a
 
 ![Interventions dashboard](docs/screenshots/interventions.png)
 
+### State Drilldown
+
+![State drilldown drawer](docs/screenshots/state-drilldown.png)
+
+### Methodology
+
+![Methodology page](docs/screenshots/methodology.png)
+
 ## What This Dashboard Does
 
 - Scores state-level fraud and compliance risk.
@@ -32,6 +40,9 @@ A full-stack fraud compliance intelligence platform built with React, FastAPI, a
 - Supports filtering, searching, sorting, chart review, and CSV export.
 - Presents the project context through a landing page for evaluators and users.
 - Falls back to labeled demo data when the live API is unavailable during local review.
+- Adds an executive intelligence feed that summarizes the current risk picture.
+- Supports state drilldowns with explanation, peer rank, exposure, and recommended action.
+- Documents the scoring model on a dedicated methodology page.
 
 ## Why It Matters
 
@@ -81,6 +92,7 @@ fraud-compliance-dashboard/
 | `/` | Interactive state risk score dashboard and live demo entry point |
 | `/interventions` | Recommended compliance interventions dashboard |
 | `/about` | Project explanation, SAR gap context, architecture, and workflow |
+| `/methodology` | Risk formula, tier thresholds, assumptions, and limitations |
 
 ## API Endpoints
 
@@ -168,6 +180,8 @@ Risk tiers are assigned from the score:
 | `60.01-100` | High |
  
 Revenue at risk is stored as a separate estimated exposure field so the prototype can tune the business-impact model independently from the filing-gap score.
+
+The live dashboard also includes a state drilldown drawer. Selecting a state exposes its peer rank, risk explanation, revenue exposure, and recommended next action.
 
 ## Verification
 

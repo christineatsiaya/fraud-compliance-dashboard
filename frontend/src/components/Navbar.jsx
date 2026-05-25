@@ -22,6 +22,12 @@ function Navbar() {
             >
               About
             </Link>
+            <Link
+              to="/methodology"
+              className="hover:text-blue-400 transition-colors"
+            >
+              Methodology
+            </Link>
           </div>
         </div>
       </div>
