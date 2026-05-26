@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import apiClient from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -74,33 +74,51 @@ function SidebarIcon({ children, active = false }) {
 }
 
 function RiskScores() {
+  const navigate = useNavigate();
   const [riskScores, setRiskScores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [usingDemoData, setUsingDemoData] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState(null);
   const [filterTier, setFilterTier] = useState("ALL");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedState, setSelectedState] = useState(null);
   const [activeRole, setActiveRole] = useState(ROLE_VIEW_IDS.EXECUTIVE);
 
-  useEffect(() => {
-    const fetchRiskScores = async () => {
-      try {
-        const response = await apiClient.get("/risk/risk-scores");
-        setRiskScores(response.data);
-      } catch (err) {
-        setRiskScores(DEMO_RISK_SCORES);
-        setUsingDemoData(true);
-        setError(null);
-        console.error("Error fetching risk scores:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchRiskScores = useCallback(async ({ showToast = false } = {}) => {
+    setRefreshing(true);
 
-    fetchRiskScores();
+    try {
+      const response = await apiClient.get("/risk/risk-scores");
+      setRiskScores(response.data);
+      setUsingDemoData(false);
+      setError(null);
+      setLastSyncedAt(new Date());
+
+      if (showToast) {
+        toast.success("Live Supabase data refreshed");
+      }
+    } catch (err) {
+      setRiskScores(DEMO_RISK_SCORES);
+      setUsingDemoData(true);
+      setError(null);
+      setLastSyncedAt(new Date());
+      console.error("Error fetching risk scores:", err);
+
+      if (showToast) {
+        toast.error("Live API unavailable. Showing fallback demo data.");
+      }
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchRiskScores();
+  }, [fetchRiskScores]);
 
   const filteredData = useMemo(() => {
     let filtered = riskScores;
@@ -169,6 +187,18 @@ function RiskScores() {
     (score) => score.risk_score >= 80 || score.risk_tier === "HIGH",
   ).length;
   const criticalRiskCount = filteredData.filter((score) => score.risk_score >= 80).length;
+  const dataSourceLabel = usingDemoData
+    ? "Fallback demo data"
+    : "Live Supabase data";
+  const dataSourceDetail = usingDemoData
+    ? "Backend unavailable"
+    : "Connected through FastAPI";
+  const lastSyncedLabel = lastSyncedAt
+    ? lastSyncedAt.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "Sync pending";
 
   const handleSort = (key) => {
     setSortConfig((current) => ({
@@ -183,6 +213,13 @@ function RiskScores() {
     setSearchTerm("");
     setSortConfig({ key: null, direction: "asc" });
     toast.success("Filters refreshed");
+  };
+
+  const handleRefreshData = () => {
+    setFilterTier("ALL");
+    setSearchTerm("");
+    setSortConfig({ key: null, direction: "asc" });
+    fetchRiskScores({ showToast: true });
   };
 
   const handleExportCSV = () => {
@@ -241,7 +278,11 @@ function RiskScores() {
         <aside className="hidden w-[220px] shrink-0 flex-col border-r border-slate-200 bg-slate-50 lg:flex">
           <div className="border-b border-slate-200 px-4 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#185FA5] text-sm font-bold text-white">
+              <div
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-[#185FA5] text-sm font-bold text-white"
+                onClick={() => navigate("/")}
+                title="Back to home"
+              >
                 FG
               </div>
               <div>
@@ -320,11 +361,28 @@ function RiskScores() {
         <main className="flex min-w-0 flex-1 flex-col bg-white">
           <header className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 lg:flex-row lg:items-center">
             <div className="min-w-0 flex-1">
-              <h1 className="text-base font-semibold text-slate-950">
-                Risk Scores - United States
-              </h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-base font-semibold text-slate-950">
+                  Risk Scores - United States
+                </h1>
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                    usingDemoData
+                      ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+                      : "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                  }`}
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      usingDemoData ? "bg-amber-500" : "bg-emerald-500"
+                    }`}
+                  />
+                  {dataSourceLabel}
+                </span>
+              </div>
               <p className="mt-1 text-xs text-slate-500">
-                BSA/SAR filing gap analysis · Updated May 25, 2026
+                BSA/SAR filing gap analysis · {dataSourceDetail} · Last synced{" "}
+                {lastSyncedLabel}
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -341,15 +399,68 @@ function RiskScores() {
               </button>
               <button
                 type="button"
-                onClick={handleClearFilters}
-                className="flex items-center justify-center rounded-md bg-[#185FA5] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#134c84]"
+                onClick={handleRefreshData}
+                disabled={refreshing}
+                className="flex items-center justify-center rounded-md bg-[#185FA5] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#134c84] disabled:cursor-not-allowed disabled:bg-slate-400"
               >
-                Refresh
+                {refreshing ? "Refreshing..." : "Refresh"}
               </button>
             </div>
           </header>
 
           <div className="flex-1 space-y-4 overflow-y-auto bg-[#f8fafc] p-4 lg:p-5">
+            <section className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
+              <div
+                className={`rounded-lg border px-4 py-3 ${
+                  usingDemoData
+                    ? "border-amber-200 bg-amber-50"
+                    : "border-emerald-200 bg-emerald-50"
+                }`}
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full bg-white px-2 py-1 text-[11px] font-semibold uppercase tracking-wide ring-1 ${
+                      usingDemoData
+                        ? "text-amber-700 ring-amber-200"
+                        : "text-emerald-700 ring-emerald-200"
+                    }`}
+                  >
+                    {usingDemoData ? "Fallback active" : "Backend connected"}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold ${
+                      usingDemoData ? "text-amber-950" : "text-emerald-950"
+                    }`}
+                  >
+                    {usingDemoData
+                      ? "The live API is unavailable, so the dashboard is protecting the demo with fallback data."
+                      : "Supabase-powered risk scores are loading through your FastAPI API."}
+                  </span>
+                </div>
+                <p
+                  className={`mt-2 text-sm leading-6 ${
+                    usingDemoData ? "text-amber-800" : "text-emerald-800"
+                  }`}
+                >
+                  Current view reflects records returned by the{" "}
+                  <span className="font-semibold">risk_scores</span> table.
+                  Refresh re-queries the backend instead of using hardcoded
+                  values.
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Data source
+                </p>
+                <p className="mt-2 text-sm font-semibold text-slate-900">
+                  {dataSourceLabel}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {riskScores.length} records · Synced {lastSyncedLabel}
+                </p>
+              </div>
+            </section>
+
             {usingDemoData && (
               <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
                 <span className="font-semibold">Recruiter notice:</span> Showing
