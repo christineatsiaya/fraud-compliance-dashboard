@@ -119,11 +119,14 @@ export default function RiskMap() {
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <img
-                src="/usa-map.svg"
-                alt="Map of the United States with states"
-                className="mx-auto block w-full max-w-4xl rounded-lg bg-white object-contain p-4"
-              />
+              <object
+                data="/usa-map.svg"
+                type="image/svg+xml"
+                aria-label="Map of the United States with states"
+                className="mx-auto block h-[420px] w-full max-w-4xl rounded-lg bg-white p-4"
+              >
+                <p>Map of the United States</p>
+              </object>
             </div>
           </section>
 
