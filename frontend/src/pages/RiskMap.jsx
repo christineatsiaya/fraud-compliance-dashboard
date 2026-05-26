@@ -13,7 +13,7 @@ export default function RiskMap() {
     const fetchData = async () => {
       try {
         const [filingsRes, riskRes] = await Promise.all([
-          apiClient.get("/sar/top-states?limit=60"),
+          apiClient.get("/sar/top-states?limit=80"),
           apiClient.get("/risk/risk-scores"),
         ]);
 
@@ -29,22 +29,27 @@ export default function RiskMap() {
     fetchData();
   }, []);
 
+  const validFilingsData = useMemo(
+    () => filingsData.filter((d) => /^[A-Z]{2}$/.test(d.state_code)),
+    [filingsData],
+  );
+
   const riskByCode = useMemo(
     () => Object.fromEntries(riskScores.map((d) => [d.state_code, d])),
     [riskScores],
   );
 
   const maxFilings = useMemo(
-    () => Math.max(...filingsData.map((d) => d.total_filings || 0), 0),
-    [filingsData],
+    () => Math.max(...validFilingsData.map((d) => d.total_filings || 0), 0),
+    [validFilingsData],
   );
 
   const totalFilings = useMemo(
-    () => filingsData.reduce((sum, d) => sum + (d.total_filings || 0), 0),
-    [filingsData],
+    () => validFilingsData.reduce((sum, d) => sum + (d.total_filings || 0), 0),
+    [validFilingsData],
   );
 
-  const topState = filingsData[0];
+  const topState = validFilingsData[0];
 
   if (loading) {
     return (
@@ -76,9 +81,7 @@ export default function RiskMap() {
             <p className="mt-2 text-2xl font-semibold text-slate-900">
               {(totalFilings / 1000000).toFixed(1)}M
             </p>
-            <p className="mt-1 text-xs text-slate-400">
-              Across available states
-            </p>
+            <p className="mt-1 text-xs text-slate-400">U.S. states only</p>
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -119,14 +122,9 @@ export default function RiskMap() {
               <img
                 src="/usa-map.svg"
                 alt="Map of the United States with states"
-                className="mx-auto w-full max-w-4xl rounded-lg bg-white object-contain p-4"
+                className="mx-auto block w-full max-w-4xl rounded-lg bg-white object-contain p-4"
               />
             </div>
-
-            <p className="mt-3 text-xs text-slate-400">
-              Add your USA SVG file at:{" "}
-              <strong>frontend/public/usa-map.svg</strong>
-            </p>
           </section>
 
           <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -140,7 +138,7 @@ export default function RiskMap() {
             </div>
 
             <div className="divide-y divide-slate-100">
-              {filingsData.slice(0, 12).map((state, index) => {
+              {validFilingsData.slice(0, 12).map((state, index) => {
                 const risk = riskByCode[state.state_code];
                 const width = maxFilings
                   ? Math.min(100, (state.total_filings / maxFilings) * 100)
