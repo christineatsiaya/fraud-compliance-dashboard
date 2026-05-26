@@ -614,7 +614,11 @@ function RiskScores() {
       )}
 
       {canShow(DASHBOARD_SECTIONS.COPILOT) && (
-        <ComplianceCopilot states={filteredData} selectedState={selectedState} />
+        <ComplianceCopilot
+          states={filteredData}
+          selectedState={selectedState}
+          activeRole={activeRole}
+        />
       )}
 
       <StateDrilldownDrawer
