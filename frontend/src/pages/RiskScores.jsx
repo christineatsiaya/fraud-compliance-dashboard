@@ -18,12 +18,48 @@ import {
 } from "../utils/roleViews";
 
 const DEMO_RISK_SCORES = [
-  { id: "demo-ca", state_code: "CA", risk_score: 91.4, revenue_at_risk: 18400000, risk_tier: "HIGH" },
-  { id: "demo-ny", state_code: "NY", risk_score: 86.2, revenue_at_risk: 15100000, risk_tier: "HIGH" },
-  { id: "demo-tx", state_code: "TX", risk_score: 74.8, revenue_at_risk: 13200000, risk_tier: "MEDIUM" },
-  { id: "demo-fl", state_code: "FL", risk_score: 69.5, revenue_at_risk: 9800000, risk_tier: "MEDIUM" },
-  { id: "demo-wa", state_code: "WA", risk_score: 42.7, revenue_at_risk: 4100000, risk_tier: "LOW" },
-  { id: "demo-co", state_code: "CO", risk_score: 38.9, revenue_at_risk: 3300000, risk_tier: "LOW" },
+  {
+    id: "demo-ca",
+    state_code: "CA",
+    risk_score: 91.4,
+    revenue_at_risk: 18400000,
+    risk_tier: "HIGH",
+  },
+  {
+    id: "demo-ny",
+    state_code: "NY",
+    risk_score: 86.2,
+    revenue_at_risk: 15100000,
+    risk_tier: "HIGH",
+  },
+  {
+    id: "demo-tx",
+    state_code: "TX",
+    risk_score: 74.8,
+    revenue_at_risk: 13200000,
+    risk_tier: "MEDIUM",
+  },
+  {
+    id: "demo-fl",
+    state_code: "FL",
+    risk_score: 69.5,
+    revenue_at_risk: 9800000,
+    risk_tier: "MEDIUM",
+  },
+  {
+    id: "demo-wa",
+    state_code: "WA",
+    risk_score: 42.7,
+    revenue_at_risk: 4100000,
+    risk_tier: "LOW",
+  },
+  {
+    id: "demo-co",
+    state_code: "CO",
+    risk_score: 38.9,
+    revenue_at_risk: 3300000,
+    risk_tier: "LOW",
+  },
 ];
 
 const stateNames = {
@@ -56,9 +92,23 @@ const roleOptions = [
 ];
 
 function riskBadge(score) {
-  if (score >= 80) return { label: "Critical", className: "bg-red-50 text-red-700", color: "#A32D2D" };
-  if (score >= 60) return { label: "High", className: "bg-amber-50 text-amber-700", color: "#BA7517" };
-  return { label: "Medium", className: "bg-blue-50 text-blue-700", color: "#185FA5" };
+  if (score >= 80)
+    return {
+      label: "Critical",
+      className: "bg-red-50 text-red-700",
+      color: "#A32D2D",
+    };
+  if (score >= 60)
+    return {
+      label: "High",
+      className: "bg-amber-50 text-amber-700",
+      color: "#BA7517",
+    };
+  return {
+    label: "Medium",
+    className: "bg-blue-50 text-blue-700",
+    color: "#185FA5",
+  };
 }
 
 function SidebarIcon({ children, active = false }) {
@@ -85,7 +135,9 @@ function RiskScores() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedState, setSelectedState] = useState(null);
-  const [activeRole, setActiveRole] = useState(ROLE_VIEW_IDS.EXECUTIVE);
+  const [activeRole, setActiveRole] = useState(ROLE_VIEW_IDS.ANALYST);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const fetchRiskScores = useCallback(async ({ showToast = false } = {}) => {
     setRefreshing(true);
@@ -155,9 +207,13 @@ function RiskScores() {
   );
 
   const stats = useMemo(() => {
-    if (filteredData.length === 0) return { count: 0, avgRisk: 0, totalRevenue: 0 };
+    if (filteredData.length === 0)
+      return { count: 0, avgRisk: 0, totalRevenue: 0 };
 
-    const totalRisk = filteredData.reduce((sum, score) => sum + score.risk_score, 0);
+    const totalRisk = filteredData.reduce(
+      (sum, score) => sum + score.risk_score,
+      0,
+    );
     const totalRevenue = filteredData.reduce(
       (sum, score) => sum + score.revenue_at_risk,
       0,
@@ -186,7 +242,9 @@ function RiskScores() {
   const highRiskCount = filteredData.filter(
     (score) => score.risk_score >= 80 || score.risk_tier === "HIGH",
   ).length;
-  const criticalRiskCount = filteredData.filter((score) => score.risk_score >= 80).length;
+  const criticalRiskCount = filteredData.filter(
+    (score) => score.risk_score >= 80,
+  ).length;
   const dataSourceLabel = usingDemoData
     ? "Fallback demo data"
     : "Live Supabase data";
@@ -275,9 +333,32 @@ function RiskScores() {
     <div className="min-h-screen bg-[#f5f7fa] p-3 text-slate-950">
       <Toaster position="top-right" />
       <div className="mx-auto flex min-h-[calc(100vh-24px)] max-w-[1440px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <aside className="hidden w-[220px] shrink-0 flex-col border-r border-slate-200 bg-slate-50 lg:flex">
-          <div className="border-b border-slate-200 px-4 py-4">
-            <div className="flex items-center gap-3">
+        <aside
+          className={`hidden shrink-0 flex-col border-r border-slate-200 bg-slate-50 transition-all duration-200 lg:flex ${
+            sidebarCollapsed ? "w-[56px]" : "w-[220px]"
+          }`}
+        >
+          <div className="flex items-center justify-between border-b border-slate-200 px-3 py-4">
+            {!sidebarCollapsed && (
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-[#185FA5] text-sm font-bold text-white"
+                  onClick={() => navigate("/")}
+                  title="Back to home"
+                >
+                  FG
+                </div>
+                <div>
+                  <p className="text-sm font-semibold leading-tight">
+                    FinCEN Guard
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    Compliance Intelligence
+                  </p>
+                </div>
+              </div>
+            )}
+            {sidebarCollapsed && (
               <div
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-[#185FA5] text-sm font-bold text-white"
                 onClick={() => navigate("/")}
@@ -285,76 +366,153 @@ function RiskScores() {
               >
                 FG
               </div>
-              <div>
-                <p className="text-sm font-semibold leading-tight">FinCEN Guard</p>
-                <p className="text-[11px] text-slate-500">Compliance Intelligence</p>
-              </div>
-            </div>
+            )}
+            <button
+              onClick={() => setSidebarCollapsed((current) => !current)}
+              className="ml-auto flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? "→" : "←"}
+            </button>
           </div>
 
           <div className="px-2 py-3">
-            <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              Overview
-            </p>
+            {!sidebarCollapsed && (
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                Overview
+              </p>
+            )}
             <button className="flex w-full items-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-2 text-left text-sm font-medium text-slate-900">
-              <SidebarIcon active>D</SidebarIcon>
-              Dashboard
-            </button>
-            <button className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white">
-              <SidebarIcon>M</SidebarIcon>
-              Risk Map
-            </button>
-            <button className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white">
-              <SidebarIcon>S</SidebarIcon>
-              SAR Analytics
-              <span className="ml-auto rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
-                Live
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#185FA5] text-[11px] font-semibold text-white">
+                D
               </span>
+              {!sidebarCollapsed && "Dashboard"}
             </button>
+            <Link
+              to="/risk-map"
+              className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white"
+            >
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
+                🗺
+              </span>
+              {!sidebarCollapsed && "Risk Map"}
+            </Link>
+
+            <Link
+              to="/sar-analytics"
+              className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white"
+            >
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
+                📊
+              </span>
+
+              {!sidebarCollapsed && (
+                <>
+                  SAR Analytics
+                  <span className="ml-auto rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                    Live
+                  </span>
+                </>
+              )}
+            </Link>
           </div>
 
           <div className="px-2 py-2">
-            <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              Compliance
-            </p>
+            {!sidebarCollapsed && (
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                Compliance
+              </p>
+            )}
             <Link
               to="/interventions"
               className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-slate-600 hover:bg-white"
             >
-              <SidebarIcon>I</SidebarIcon>
-              Interventions
-              <span className="ml-auto rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-                {highRiskCount}
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
+                🚨
               </span>
+              {!sidebarCollapsed && (
+                <>
+                  Interventions
+                  <span className="ml-auto rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">
+                    {highRiskCount}
+                  </span>
+                </>
+              )}
             </Link>
             <Link
               to="/methodology"
               className="mt-1 flex items-center gap-2 rounded-md px-2 py-2 text-sm text-slate-600 hover:bg-white"
             >
-              <SidebarIcon>R</SidebarIcon>
-              Reports
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
+                📄
+              </span>
+              {!sidebarCollapsed && "Reports"}
             </Link>
           </div>
 
           <div className="px-2 py-2">
-            <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              AI Tools
-            </p>
+            {!sidebarCollapsed && (
+              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                AI Tools
+              </p>
+            )}
             <button
               type="button"
               onClick={() => setActiveRole(ROLE_VIEW_IDS.ANALYST)}
               className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white"
             >
-              <SidebarIcon>AI</SidebarIcon>
-              Copilot
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
+                🤖
+              </span>
+              {!sidebarCollapsed && "Copilot"}
             </button>
           </div>
 
           <div className="mt-auto border-t border-slate-200 p-3">
-            <div className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
-              <span className="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500" />
-              {roleOptions.find((role) => role.id === activeRole)?.label}
-            </div>
+            {!sidebarCollapsed ? (
+              <div className="space-y-1">
+                <p className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                  View as
+                </p>
+                {roleOptions.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setActiveRole(role.id)}
+                    className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition ${
+                      activeRole === role.id
+                        ? "bg-blue-50 font-semibold text-blue-700"
+                        : "text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        activeRole === role.id ? "bg-blue-500" : "bg-slate-300"
+                      }`}
+                    />
+                    {role.label}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-1">
+                {roleOptions.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setActiveRole(role.id)}
+                    title={role.label}
+                    className={`flex h-6 w-6 items-center justify-center rounded text-[10px] font-bold transition ${
+                      activeRole === role.id
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-slate-400 hover:bg-white"
+                    }`}
+                  >
+                    {role.label[0]}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </aside>
 
@@ -461,17 +619,27 @@ function RiskScores() {
               </div>
             </section>
 
-            {usingDemoData && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                <span className="font-semibold">Recruiter notice:</span> Showing
-                demo data because the live API is unavailable.
+            {usingDemoData && !bannerDismissed && (
+              <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <span>
+                  <span className="font-semibold">Demo mode:</span> Showing
+                  sample data - live API unavailable.
+                </span>
+                <button
+                  onClick={() => setBannerDismissed(true)}
+                  className="ml-4 text-amber-500 hover:text-amber-800"
+                >
+                  ✕
+                </button>
               </div>
             )}
 
             <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
                 <p className="text-xs text-slate-500">States Critical Risk</p>
-                <p className="mt-2 text-2xl font-semibold">{criticalRiskCount}</p>
+                <p className="mt-2 text-2xl font-semibold">
+                  {criticalRiskCount}
+                </p>
                 <p className="mt-1 text-xs text-red-700">
                   +{highRiskCount} high-risk watchlist
                 </p>
@@ -488,7 +656,9 @@ function RiskScores() {
                 <p className="mt-2 text-2xl font-semibold">
                   {stats.avgRisk.toFixed(1)}%
                 </p>
-                <p className="mt-1 text-xs text-slate-500">Average risk score</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Average risk score
+                </p>
               </div>
               <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
                 <p className="text-xs text-slate-500">Interventions Active</p>
@@ -497,31 +667,15 @@ function RiskScores() {
               </div>
             </section>
 
-            <section className="grid gap-3 md:grid-cols-3">
-              {roleOptions.map((role) => (
-                <button
-                  key={role.id}
-                  type="button"
-                  onClick={() => setActiveRole(role.id)}
-                  className={`rounded-lg border p-3 text-left transition ${
-                    activeRole === role.id
-                      ? "border-[#185FA5] bg-blue-50"
-                      : "border-slate-200 bg-white hover:border-blue-200"
-                  }`}
-                >
-                  <p className="text-sm font-semibold">{role.label}</p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
-                    {role.detail}
-                  </p>
-                </button>
-              ))}
-            </section>
-
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
               <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <div className="flex items-center border-b border-slate-200 px-4 py-3">
-                  <span className="text-sm font-semibold">State risk scores</span>
-                  <span className="ml-auto text-xs text-blue-700">View all states</span>
+                  <span className="text-sm font-semibold">
+                    State risk scores
+                  </span>
+                  <span className="ml-auto text-xs text-blue-700">
+                    View all states
+                  </span>
                 </div>
 
                 {canShow(DASHBOARD_SECTIONS.FILTERS) && (
@@ -615,8 +769,8 @@ function RiskScores() {
                     AI analysis available in Analyst and Operations views
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Switch roles to ask about state risk, exposure, and recommended
-                    interventions.
+                    Switch roles to ask about state risk, exposure, and
+                    recommended interventions.
                   </p>
                 </section>
               )}
@@ -670,58 +824,59 @@ function RiskScores() {
               <ScenarioForecasting states={sortedData} />
             )}
 
-            {canShow(DASHBOARD_SECTIONS.DETAILED_TABLE) && sortedData.length > 0 && (
-              <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                <table className="min-w-full divide-y divide-slate-200">
-                  <thead className="bg-slate-50">
-                    <tr>
-                      {[
-                        ["state_code", "State"],
-                        ["risk_score", "Risk Score"],
-                        ["revenue_at_risk", "Revenue at Risk"],
-                      ].map(([key, label]) => (
-                        <th
-                          key={key}
-                          className="cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
-                          onClick={() => handleSort(key)}
-                        >
-                          {label}{" "}
-                          {sortConfig.key === key &&
-                            (sortConfig.direction === "asc" ? "↑" : "↓")}
+            {canShow(DASHBOARD_SECTIONS.DETAILED_TABLE) &&
+              sortedData.length > 0 && (
+                <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <table className="min-w-full divide-y divide-slate-200">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        {[
+                          ["state_code", "State"],
+                          ["risk_score", "Risk Score"],
+                          ["revenue_at_risk", "Revenue at Risk"],
+                        ].map(([key, label]) => (
+                          <th
+                            key={key}
+                            className="cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+                            onClick={() => handleSort(key)}
+                          >
+                            {label}{" "}
+                            {sortConfig.key === key &&
+                              (sortConfig.direction === "asc" ? "↑" : "↓")}
+                          </th>
+                        ))}
+                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Risk Tier
                         </th>
-                      ))}
-                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Risk Tier
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {sortedData.map((score) => (
-                      <tr
-                        key={score.id}
-                        className="cursor-pointer hover:bg-blue-50"
-                        onClick={() => setSelectedState(score)}
-                      >
-                        <td className="px-4 py-3 text-sm font-medium">
-                          {score.state_code}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-600">
-                          {score.risk_score.toFixed(2)}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-600">
-                          ${(score.revenue_at_risk / 1000000).toFixed(2)}M
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
-                            {score.risk_tier}
-                          </span>
-                        </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </section>
-            )}
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {sortedData.map((score) => (
+                        <tr
+                          key={score.id}
+                          className="cursor-pointer hover:bg-blue-50"
+                          onClick={() => setSelectedState(score)}
+                        >
+                          <td className="px-4 py-3 text-sm font-medium">
+                            {score.state_code}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-600">
+                            {score.risk_score.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-600">
+                            ${(score.revenue_at_risk / 1000000).toFixed(2)}M
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                              {score.risk_tier}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </section>
+              )}
 
             {canShow(DASHBOARD_SECTIONS.METHODOLOGY) && (
               <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -733,24 +888,30 @@ function RiskScores() {
                 </h2>
                 <div className="mt-4 grid gap-4 text-sm leading-6 text-slate-600 md:grid-cols-3">
                   <div>
-                    <h3 className="font-semibold text-slate-900">1. Compare filings</h3>
+                    <h3 className="font-semibold text-slate-900">
+                      1. Compare filings
+                    </h3>
                     <p className="mt-2">
-                      Actual SAR filing counts are compared against expected filing
-                      counts for each state.
+                      Actual SAR filing counts are compared against expected
+                      filing counts for each state.
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">2. Score the gap</h3>
+                    <h3 className="font-semibold text-slate-900">
+                      2. Score the gap
+                    </h3>
                     <p className="mt-2">
                       Risk score is the filing gap percentage, clamped between 0
                       and 100 so outliers remain readable.
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">3. Assign tier</h3>
+                    <h3 className="font-semibold text-slate-900">
+                      3. Assign tier
+                    </h3>
                     <p className="mt-2">
-                      Scores up to 30 are low risk, up to 60 are medium risk, and
-                      scores above 60 are high risk.
+                      Scores up to 30 are low risk, up to 60 are medium risk,
+                      and scores above 60 are high risk.
                     </p>
                   </div>
                 </div>
