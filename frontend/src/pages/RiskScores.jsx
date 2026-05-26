@@ -17,8 +17,14 @@ import AiInsightCards from "../components/AiInsightCards";
 import ComplianceCopilot from "../components/ComplianceCopilot";
 import HistoricalTrendAnalysis from "../components/HistoricalTrendAnalysis";
 import ScenarioForecasting from "../components/ScenarioForecasting";
+import RoleViewSwitcher from "../components/RoleViewSwitcher";
 import { buildAiInsightCards } from "../utils/copilot";
 import { buildExecutiveInsights } from "../utils/intelligence";
+import {
+  DASHBOARD_SECTIONS,
+  ROLE_VIEW_IDS,
+  shouldShowSection,
+} from "../utils/roleViews";
 
 const DEMO_RISK_SCORES = [
   {
@@ -74,6 +80,7 @@ function RiskScores() {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedState, setSelectedState] = useState(null);
+  const [activeRole, setActiveRole] = useState(ROLE_VIEW_IDS.EXECUTIVE);
 
   useEffect(() => {
     const fetchRiskScores = async () => {
@@ -223,6 +230,8 @@ function RiskScores() {
     [filteredData],
   );
 
+  const canShow = (sectionId) => shouldShowSection(activeRole, sectionId);
+
   if (loading) {
     return (
       <div className="container mx-auto px-6 py-8">
@@ -286,6 +295,11 @@ function RiskScores() {
         </div>
       </section>
 
+      <RoleViewSwitcher
+        activeRole={activeRole}
+        onRoleChange={setActiveRole}
+      />
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Risk Score Explorer</h2>
         <button
@@ -315,7 +329,8 @@ function RiskScores() {
         </div>
       )}
 
-      {executiveInsights.length > 0 && (
+      {canShow(DASHBOARD_SECTIONS.EXECUTIVE_FEED) &&
+        executiveInsights.length > 0 && (
         <section className="mb-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -359,10 +374,13 @@ function RiskScores() {
         </section>
       )}
 
-      <AiInsightCards insights={aiInsights} />
+      {canShow(DASHBOARD_SECTIONS.AI_INSIGHTS) && (
+        <AiInsightCards insights={aiInsights} />
+      )}
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      {canShow(DASHBOARD_SECTIONS.SUMMARY_STATS) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-lg shadow p-6">
           <p className="text-sm text-gray-600 mb-1">Total States</p>
           <p className="text-3xl font-bold text-gray-900">{stats.count}</p>
@@ -380,9 +398,11 @@ function RiskScores() {
           </p>
         </div>
       </div>
+      )}
 
       {/* Filter and Search */}
-      <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+      {canShow(DASHBOARD_SECTIONS.FILTERS) && (
+        <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="flex flex-col md:flex-row gap-4 flex-1">
           <div className="flex items-center gap-4">
             <label className="text-sm font-medium text-gray-700">
@@ -423,9 +443,11 @@ function RiskScores() {
           </button>
         )}
       </div>
+      )}
 
       {/* Bar Chart */}
-      {sortedData.length > 0 ? (
+      {canShow(DASHBOARD_SECTIONS.RISK_CHART) &&
+        (sortedData.length > 0 ? (
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h3 className="text-lg font-semibold mb-4">Risk Score by State</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -469,13 +491,17 @@ function RiskScores() {
             </button>
           )}
         </div>
+      ))}
+
+      {canShow(DASHBOARD_SECTIONS.HISTORICAL_TRENDS) && (
+        <HistoricalTrendAnalysis states={sortedData} />
+      )}
+      {canShow(DASHBOARD_SECTIONS.SCENARIO_FORECAST) && (
+        <ScenarioForecasting states={sortedData} />
       )}
 
-      <HistoricalTrendAnalysis states={sortedData} />
-      <ScenarioForecasting states={sortedData} />
-
       {/* Table */}
-      {sortedData.length > 0 && (
+      {canShow(DASHBOARD_SECTIONS.DETAILED_TABLE) && sortedData.length > 0 && (
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -545,7 +571,8 @@ function RiskScores() {
         </div>
       )}
 
-      <section className="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+      {canShow(DASHBOARD_SECTIONS.METHODOLOGY) && (
+        <section className="mt-8 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">
           Methodology
         </p>
@@ -575,9 +602,12 @@ function RiskScores() {
             </p>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      <ComplianceCopilot states={filteredData} selectedState={selectedState} />
+      {canShow(DASHBOARD_SECTIONS.COPILOT) && (
+        <ComplianceCopilot states={filteredData} selectedState={selectedState} />
+      )}
 
       <StateDrilldownDrawer
         state={selectedState}
