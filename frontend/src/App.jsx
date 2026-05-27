@@ -16,7 +16,7 @@ import SarAnalytics from "./pages/SarAnalytics";
 
 function AppContent() {
   const location = useLocation();
-  const isPublic = location.pathname === "/" || location.pathname === "/about";
+  const isPublic = location.pathname === "/about";
 
   return (
     <div className="min-h-screen bg-[#f5f7fa]">

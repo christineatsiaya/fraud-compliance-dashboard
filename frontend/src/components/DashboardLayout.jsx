@@ -94,6 +94,23 @@ export default function DashboardLayout({
           <button
             type="button"
             onClick={() => {
+              setMobileOpen(false);
+              navigate("/");
+            }}
+            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-slate-900"
+            title={collapsed ? "Back to landing" : undefined}
+          >
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[13px] font-semibold text-slate-500">
+              ←
+            </span>
+            {!collapsed && <span>Back to landing</span>}
+          </button>
+        </div>
+
+        <div className="px-2 py-1">
+          <button
+            type="button"
+            onClick={() => {
               setTourOpen(true);
               setMobileOpen(false);
             }}
@@ -242,10 +259,10 @@ export default function DashboardLayout({
         </div>
         <button
           type="button"
-          onClick={() => setTourOpen(true)}
-          className="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700"
+          onClick={() => navigate("/")}
+          className="rounded-md bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700"
         >
-          Try Demo
+          Home
         </button>
       </div>
 
