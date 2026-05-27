@@ -2,7 +2,7 @@
 
 A full-stack fraud compliance intelligence platform built with React, FastAPI, and Supabase. The project explores the "SAR gap": the disconnect between suspicious activity reporting volume and the regulator-ready intelligence needed to prioritize enforcement, controls, and fraud disruption.
 
-**Live demo:** Coming after Vercel and Render deployment.
+**Live demo:** Deployed as a Vercel frontend with a Render-hosted FastAPI API.
 
 ## Screenshots
 
@@ -38,11 +38,22 @@ A full-stack fraud compliance intelligence platform built with React, FastAPI, a
 - Recommends compliance interventions with priority levels.
 - Includes regulatory citations and confidence scores.
 - Supports filtering, searching, sorting, chart review, and CSV export.
+- Provides role-specific dashboard views for Executive, Analyst, and Operations users.
+- Includes a guided demo tour for recruiters and reviewers.
+- Shows a U.S. SAR filing map and SAR trend analytics from API-backed data.
 - Presents the project context through a landing page for evaluators and users.
 - Falls back to labeled demo data when the live API is unavailable during local review.
 - Adds an executive intelligence feed that summarizes the current risk picture.
 - Supports state drilldowns with explanation, peer rank, exposure, and recommended action.
 - Documents the scoring model on a dedicated methodology page.
+
+## What I Built
+
+- React dashboard architecture with shared dashboard layout, responsive sidebar, route-level pages, and role-based views.
+- FastAPI backend endpoints for risk scores, interventions, SAR filing analytics, and state-level drilldowns.
+- Supabase-backed persistence for demo portfolio records and SAR filing data.
+- Risk scoring, intervention workflow, export, demo fallback, and AI copilot interaction patterns.
+- Deployment-ready frontend and backend configuration for Vercel and Render.
 
 ## Why It Matters
 
@@ -89,7 +100,10 @@ fraud-compliance-dashboard/
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Interactive state risk score dashboard and live demo entry point |
+| `/` | Public landing page and live demo entry point |
+| `/dashboard` | Main risk score dashboard with KPI cards, filters, drilldowns, exports, and copilot |
+| `/risk-map` | U.S. state-level SAR filing map |
+| `/sar-analytics` | SAR filing trend analytics and top-state comparisons |
 | `/interventions` | Recommended compliance interventions dashboard |
 | `/about` | Project explanation, SAR gap context, architecture, and workflow |
 | `/methodology` | Risk formula, tier thresholds, assumptions, and limitations |
@@ -160,7 +174,7 @@ cd backend
 python seed_demo_data.py
 ```
 
-This writes demo rows to `risk_scores` and `interventions`, so the deployed frontend can show real API-backed data instead of relying on local fallback data.
+This writes a broader 15-state risk-score portfolio and intervention queue to `risk_scores` and `interventions`, so the deployed frontend can show real API-backed data instead of relying on local fallback data. Re-run this after creating or replacing a Supabase project.
 
 ## Methodology
 
@@ -206,16 +220,14 @@ Detailed documentation is available in [docs/PROJECT_DOCUMENTATION.md](docs/PROJ
 
 ## Current Status
 
-This is an MVP-stage full-stack prototype. The main dashboard workflows are in place, the frontend builds successfully, and the app has a documented product concept. The next phase is to strengthen backend test coverage, seed data setup, deployment configuration, and production environment documentation.
+This is an MVP-stage full-stack prototype with deployed frontend/backend workflows, API-backed demo data, responsive dashboard navigation, SAR analytics, intervention workflow controls, and documented methodology. The next phase is to strengthen backend test coverage, add authentication, and expand institution-level data modeling.
 
 ## Roadmap
 
-- Add seed scripts or fixtures for local demo data.
 - Add frontend component tests.
 - Add stronger backend tests around risk and intervention engines.
 - Add authentication for protected analyst workflows.
 - Add deployment-specific environment documentation.
-- Add trend views for SAR filings over time.
 - Add state detail pages with risk history and intervention status.
 
 ## Deployment

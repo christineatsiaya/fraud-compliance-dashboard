@@ -33,6 +33,13 @@ const DEMO_RISK_SCORES = [
     risk_tier: "HIGH",
   },
   {
+    id: "demo-il",
+    state_code: "IL",
+    risk_score: 83.7,
+    revenue_at_risk: 12700000,
+    risk_tier: "HIGH",
+  },
+  {
     id: "demo-tx",
     state_code: "TX",
     risk_score: 74.8,
@@ -44,6 +51,34 @@ const DEMO_RISK_SCORES = [
     state_code: "FL",
     risk_score: 69.5,
     revenue_at_risk: 9800000,
+    risk_tier: "MEDIUM",
+  },
+  {
+    id: "demo-ga",
+    state_code: "GA",
+    risk_score: 64.1,
+    revenue_at_risk: 8700000,
+    risk_tier: "MEDIUM",
+  },
+  {
+    id: "demo-nj",
+    state_code: "NJ",
+    risk_score: 58.6,
+    revenue_at_risk: 7600000,
+    risk_tier: "MEDIUM",
+  },
+  {
+    id: "demo-az",
+    state_code: "AZ",
+    risk_score: 55.2,
+    revenue_at_risk: 6900000,
+    risk_tier: "MEDIUM",
+  },
+  {
+    id: "demo-nc",
+    state_code: "NC",
+    risk_score: 51.8,
+    revenue_at_risk: 6200000,
     risk_tier: "MEDIUM",
   },
   {
@@ -60,6 +95,41 @@ const DEMO_RISK_SCORES = [
     revenue_at_risk: 3300000,
     risk_tier: "LOW",
   },
+  {
+    id: "demo-ma",
+    state_code: "MA",
+    risk_score: 34.5,
+    revenue_at_risk: 2900000,
+    risk_tier: "LOW",
+  },
+  {
+    id: "demo-mn",
+    state_code: "MN",
+    risk_score: 28.9,
+    revenue_at_risk: 2200000,
+    risk_tier: "LOW",
+  },
+  {
+    id: "demo-or",
+    state_code: "OR",
+    risk_score: 24.6,
+    revenue_at_risk: 1800000,
+    risk_tier: "LOW",
+  },
+  {
+    id: "demo-ut",
+    state_code: "UT",
+    risk_score: 18.4,
+    revenue_at_risk: 1200000,
+    risk_tier: "LOW",
+  },
+  {
+    id: "demo-vt",
+    state_code: "VT",
+    risk_score: 12.9,
+    revenue_at_risk: 650000,
+    risk_tier: "LOW",
+  },
 ];
 
 const stateNames = {
@@ -67,10 +137,18 @@ const stateNames = {
   NY: "New York",
   TX: "Texas",
   FL: "Florida",
+  AZ: "Arizona",
   WA: "Washington",
   CO: "Colorado",
   IL: "Illinois",
   GA: "Georgia",
+  MA: "Massachusetts",
+  MN: "Minnesota",
+  NC: "North Carolina",
+  NJ: "New Jersey",
+  OR: "Oregon",
+  UT: "Utah",
+  VT: "Vermont",
 };
 
 const roleOptions = [
@@ -443,12 +521,12 @@ function RiskScores() {
 
             <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                <p className="text-xs text-slate-500">States Critical Risk</p>
+                <p className="text-xs text-slate-500">States High Risk</p>
                 <p className="mt-2 text-2xl font-semibold">
-                  {criticalRiskCount}
+                  {highRiskCount}
                 </p>
                 <p className="mt-1 text-xs text-red-700">
-                  +{highRiskCount} high-risk watchlist
+                  {criticalRiskCount} critical risk
                 </p>
               </div>
               <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
