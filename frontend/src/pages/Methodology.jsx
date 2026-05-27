@@ -1,3 +1,5 @@
+import DashboardLayout from "../components/DashboardLayout";
+
 const tierRows = [
   { range: "0-30", tier: "Low", meaning: "Baseline monitoring" },
   { range: "30.01-60", tier: "Medium", meaning: "Targeted monitoring" },
@@ -6,7 +8,8 @@ const tierRows = [
 
 function Methodology() {
   return (
-    <main className="container mx-auto px-6 py-10">
+    <DashboardLayout>
+      <main className="mx-auto max-w-[1440px] px-6 py-10">
       <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blue-700">
           Compliance score methodology
@@ -110,7 +113,8 @@ function Methodology() {
           </ul>
         </div>
       </section>
-    </main>
+      </main>
+    </DashboardLayout>
   );
 }
 

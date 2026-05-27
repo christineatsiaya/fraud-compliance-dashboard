@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import apiClient from "../services/api";
+import DashboardLayout from "../components/DashboardLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
 import AiInsightCards from "../components/AiInsightCards";
@@ -111,20 +111,7 @@ function riskBadge(score) {
   };
 }
 
-function SidebarIcon({ children, active = false }) {
-  return (
-    <span
-      className={`flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-semibold ${
-        active ? "bg-[#185FA5] text-white" : "bg-white text-slate-500"
-      }`}
-    >
-      {children}
-    </span>
-  );
-}
-
 function RiskScores() {
-  const navigate = useNavigate();
   const [riskScores, setRiskScores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -136,7 +123,6 @@ function RiskScores() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedState, setSelectedState] = useState(null);
   const [activeRole, setActiveRole] = useState(ROLE_VIEW_IDS.ANALYST);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
   const fetchRiskScores = useCallback(async ({ showToast = false } = {}) => {
@@ -330,193 +316,14 @@ function RiskScores() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7fa] p-3 text-slate-950">
+    <DashboardLayout
+      interventionCount={highRiskCount}
+      activeRole={activeRole}
+      onRoleChange={setActiveRole}
+      roleOptions={roleOptions}
+    >
       <Toaster position="top-right" />
-      <div className="mx-auto flex min-h-[calc(100vh-24px)] max-w-[1440px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <aside
-          className={`hidden shrink-0 flex-col border-r border-slate-200 bg-slate-50 transition-all duration-200 lg:flex ${
-            sidebarCollapsed ? "w-[56px]" : "w-[220px]"
-          }`}
-        >
-          <div className="flex items-center justify-between border-b border-slate-200 px-3 py-4">
-            {!sidebarCollapsed && (
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-[#185FA5] text-sm font-bold text-white"
-                  onClick={() => navigate("/")}
-                  title="Back to home"
-                >
-                  FG
-                </div>
-                <div>
-                  <p className="text-sm font-semibold leading-tight">
-                    FinCEN Guard
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    Compliance Intelligence
-                  </p>
-                </div>
-              </div>
-            )}
-            {sidebarCollapsed && (
-              <div
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-[#185FA5] text-sm font-bold text-white"
-                onClick={() => navigate("/")}
-                title="Back to home"
-              >
-                FG
-              </div>
-            )}
-            <button
-              onClick={() => setSidebarCollapsed((current) => !current)}
-              className="ml-auto flex h-6 w-6 items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-700"
-              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {sidebarCollapsed ? "→" : "←"}
-            </button>
-          </div>
-
-          <div className="px-2 py-3">
-            {!sidebarCollapsed && (
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                Overview
-              </p>
-            )}
-            <button className="flex w-full items-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-2 text-left text-sm font-medium text-slate-900">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#185FA5] text-[11px] font-semibold text-white">
-                D
-              </span>
-              {!sidebarCollapsed && "Dashboard"}
-            </button>
-            <Link
-              to="/risk-map"
-              className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
-                🗺
-              </span>
-              {!sidebarCollapsed && "Risk Map"}
-            </Link>
-
-            <Link
-              to="/sar-analytics"
-              className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
-                📊
-              </span>
-
-              {!sidebarCollapsed && (
-                <>
-                  SAR Analytics
-                  <span className="ml-auto rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
-                    Live
-                  </span>
-                </>
-              )}
-            </Link>
-          </div>
-
-          <div className="px-2 py-2">
-            {!sidebarCollapsed && (
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                Compliance
-              </p>
-            )}
-            <Link
-              to="/interventions"
-              className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-slate-600 hover:bg-white"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
-                🚨
-              </span>
-              {!sidebarCollapsed && (
-                <>
-                  Interventions
-                  <span className="ml-auto rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-                    {highRiskCount}
-                  </span>
-                </>
-              )}
-            </Link>
-            <Link
-              to="/methodology"
-              className="mt-1 flex items-center gap-2 rounded-md px-2 py-2 text-sm text-slate-600 hover:bg-white"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
-                📄
-              </span>
-              {!sidebarCollapsed && "Reports"}
-            </Link>
-          </div>
-
-          <div className="px-2 py-2">
-            {!sidebarCollapsed && (
-              <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                AI Tools
-              </p>
-            )}
-            <button
-              type="button"
-              onClick={() => setActiveRole(ROLE_VIEW_IDS.ANALYST)}
-              className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-600 hover:bg-white"
-            >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-semibold text-slate-500">
-                🤖
-              </span>
-              {!sidebarCollapsed && "Copilot"}
-            </button>
-          </div>
-
-          <div className="mt-auto border-t border-slate-200 p-3">
-            {!sidebarCollapsed ? (
-              <div className="space-y-1">
-                <p className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  View as
-                </p>
-                {roleOptions.map((role) => (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => setActiveRole(role.id)}
-                    className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs transition ${
-                      activeRole === role.id
-                        ? "bg-blue-50 font-semibold text-blue-700"
-                        : "text-slate-600 hover:bg-white"
-                    }`}
-                  >
-                    <span
-                      className={`h-2 w-2 rounded-full ${
-                        activeRole === role.id ? "bg-blue-500" : "bg-slate-300"
-                      }`}
-                    />
-                    {role.label}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-1">
-                {roleOptions.map((role) => (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => setActiveRole(role.id)}
-                    title={role.label}
-                    className={`flex h-6 w-6 items-center justify-center rounded text-[10px] font-bold transition ${
-                      activeRole === role.id
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-slate-400 hover:bg-white"
-                    }`}
-                  >
-                    {role.label[0]}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </aside>
-
-        <main className="flex min-w-0 flex-1 flex-col bg-white">
+      <div className="flex min-h-screen flex-col bg-white">
           <header className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 lg:flex-row lg:items-center">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
@@ -918,7 +725,6 @@ function RiskScores() {
               </section>
             )}
           </div>
-        </main>
       </div>
 
       <StateDrilldownDrawer
@@ -926,8 +732,10 @@ function RiskScores() {
         states={riskScores}
         onClose={() => setSelectedState(null)}
       />
-    </div>
+    </DashboardLayout>
   );
 }
 
 export default RiskScores;
+
+

@@ -12,6 +12,7 @@ import {
   Legend,
 } from "recharts";
 import apiClient from "../services/api";
+import DashboardLayout from "../components/DashboardLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const TOP_STATES = ["CA", "NY", "TX", "FL", "IL"];
@@ -70,7 +71,8 @@ export default function SarAnalytics() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7fa] p-3">
+    <DashboardLayout>
+      <div className="p-4">
       <div className="mx-auto max-w-[1440px] space-y-4">
         {/* Header */}
         <div className="rounded-xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
@@ -238,6 +240,7 @@ export default function SarAnalytics() {
           </table>
         </div>
       </div>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

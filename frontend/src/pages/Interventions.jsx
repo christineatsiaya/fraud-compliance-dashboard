@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import apiClient from "../services/api";
+import DashboardLayout from "../components/DashboardLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import OperationalAlertCenter from "../components/OperationalAlertCenter";
 import InterventionStatusControl from "../components/InterventionStatusControl";
@@ -199,201 +200,201 @@ function Interventions() {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <DashboardLayout
+      interventionCount={
+        filteredInterventions.filter((item) => item.priority_level === "HIGH")
+          .length
+      }
+    >
       <Toaster position="top-right" />
-
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">Recommended Interventions</h2>
-        <button
-          onClick={handleExportCSV}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Export CSV
-        </button>
-      </div>
-
-      {usingDemoData && (
-        <div className="mb-6 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-          Showing demo data because the live API is unavailable.
-        </div>
-      )}
-
-      <OperationalAlertCenter alerts={operationalAlerts} />
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Interventions</p>
-          <p className="text-3xl font-bold text-gray-900">
-            {filteredInterventions.length}
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">High Priority</p>
-          <p className="text-3xl font-bold text-gray-900">
-            {
-              filteredInterventions.filter((i) => i.priority_level === "HIGH")
-                .length
-            }
-          </p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Average Confidence</p>
-          <p className="text-3xl font-bold text-gray-900">
-            {filteredInterventions.length > 0
-              ? (
-                  (filteredInterventions.reduce(
-                    (sum, i) => sum + i.confidence_score,
-                    0,
-                  ) /
-                    filteredInterventions.length) *
-                  100
-                ).toFixed(0)
-              : 0}
-            %
-          </p>
-        </div>
-      </div>
-
-      {/* Priority Filter */}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700">
-            Filter by Priority:
-          </label>
-          <select
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-            className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="ALL">All Priorities</option>
-            <option value="HIGH">High Priority</option>
-            <option value="MEDIUM">Medium Priority</option>
-            <option value="LOW">Low Priority</option>
-          </select>
-        </div>
-
-        {hasActiveFilters && (
+      <div className="flex flex-col bg-white">
+        <header className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 lg:flex-row lg:items-center">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-base font-semibold text-slate-950">
+              Recommended Interventions
+            </h1>
+            <p className="mt-1 text-xs text-slate-500">
+              BSA/SAR compliance action queue - Ranked by priority and confidence
+            </p>
+          </div>
           <button
-            onClick={handleClearFilters}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            onClick={handleExportCSV}
+            className="flex items-center justify-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-500 hover:text-blue-700"
           >
-            Clear Filter
+            Export CSV
           </button>
-        )}
-      </div>
+        </header>
 
-      {/* Cards Grid */}
-      {workflowInterventions.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {workflowInterventions.map((intervention) => (
-            <div
-              key={intervention.id}
-              className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {intervention.state_code}
-                </h3>
-                <span
-                  className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    intervention.priority_level === "HIGH"
-                      ? "bg-red-100 text-red-800"
-                      : intervention.priority_level === "MEDIUM"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-green-100 text-green-800"
-                  }`}
-                >
-                  {intervention.priority_level}
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-medium text-gray-700">
-                    Recommendation:
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {intervention.recommendation}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-700">
-                    Regulatory Citation:
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {intervention.regulatory_citation}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-700">
-                    Confidence Score:
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {(intervention.confidence_score * 100).toFixed(0)}%
-                  </p>
-                </div>
-
-                <InterventionStatusControl
-                  status={intervention.status}
-                  onChange={(nextStatus) =>
-                    handleStatusChange(intervention, nextStatus)
-                  }
-                />
-              </div>
+        <div className="flex-1 space-y-4 overflow-y-auto bg-[#f8fafc] p-4 lg:p-5">
+          {usingDemoData && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              <span className="font-semibold">Demo mode:</span> Showing sample
+              data - live API unavailable.
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
-            No interventions found
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Try adjusting your filter to see results.
-          </p>
-          {hasActiveFilters && (
-            <button
-              onClick={handleClearFilters}
-              className="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Clear filter
-            </button>
           )}
-        </div>
-      )}
 
-      <InterventionAuditLog events={auditEvents} />
-    </div>
+          <OperationalAlertCenter alerts={operationalAlerts} />
+
+          <section className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <p className="text-xs text-slate-500">Total Interventions</p>
+              <p className="mt-2 text-2xl font-semibold">
+                {filteredInterventions.length}
+              </p>
+              <p className="mt-1 text-xs text-slate-400">Current filter scope</p>
+            </div>
+            <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <p className="text-xs text-slate-500">High Priority</p>
+              <p className="mt-2 text-2xl font-semibold text-red-700">
+                {
+                  filteredInterventions.filter(
+                    (item) => item.priority_level === "HIGH",
+                  ).length
+                }
+              </p>
+              <p className="mt-1 text-xs text-red-600">
+                Requires immediate action
+              </p>
+            </div>
+            <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
+              <p className="text-xs text-slate-500">Average Confidence</p>
+              <p className="mt-2 text-2xl font-semibold">
+                {filteredInterventions.length > 0
+                  ? (
+                      (filteredInterventions.reduce(
+                        (sum, item) => sum + item.confidence_score,
+                        0,
+                      ) /
+                        filteredInterventions.length) *
+                      100
+                    ).toFixed(0)
+                  : 0}
+                %
+              </p>
+              <p className="mt-1 text-xs text-slate-400">
+                Model confidence score
+              </p>
+            </div>
+          </section>
+
+          <div className="flex items-center gap-4 rounded-lg border border-slate-200 bg-white px-4 py-3">
+            <span className="text-sm font-medium text-slate-600">Filter:</span>
+            <select
+              value={filterPriority}
+              onChange={(event) => setFilterPriority(event.target.value)}
+              className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="ALL">All Priorities</option>
+              <option value="HIGH">High Priority</option>
+              <option value="MEDIUM">Medium Priority</option>
+              <option value="LOW">Low Priority</option>
+            </select>
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearFilters}
+                className="text-sm font-medium text-blue-700 hover:text-blue-900"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {workflowInterventions.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {workflowInterventions.map((intervention) => (
+                <div
+                  key={intervention.id}
+                  className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
+                >
+                  <div
+                    className={`h-1 w-full ${
+                      intervention.priority_level === "HIGH"
+                        ? "bg-red-500"
+                        : intervention.priority_level === "MEDIUM"
+                          ? "bg-amber-400"
+                          : "bg-emerald-400"
+                    }`}
+                  />
+                  <div className="p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-slate-900">
+                        {intervention.state_code}
+                      </h3>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          intervention.priority_level === "HIGH"
+                            ? "bg-red-50 text-red-700"
+                            : intervention.priority_level === "MEDIUM"
+                              ? "bg-amber-50 text-amber-700"
+                              : "bg-emerald-50 text-emerald-700"
+                        }`}
+                      >
+                        {intervention.priority_level}
+                      </span>
+                    </div>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                          Recommendation
+                        </p>
+                        <p className="mt-1 leading-5 text-slate-600">
+                          {intervention.recommendation}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                          Regulatory citation
+                        </p>
+                        <p className="mt-1 text-slate-600">
+                          {intervention.regulatory_citation}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                          Confidence
+                        </p>
+                        <span className="text-sm font-semibold text-slate-900">
+                          {(intervention.confidence_score * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 border-t border-slate-100 pt-3">
+                      <InterventionStatusControl
+                        status={intervention.status}
+                        onChange={(nextStatus) =>
+                          handleStatusChange(intervention, nextStatus)
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+              <p className="text-sm font-medium text-slate-900">
+                No interventions found
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Try adjusting your filter.
+              </p>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearFilters}
+                  className="mt-4 text-sm font-medium text-blue-700 hover:text-blue-900"
+                >
+                  Clear filter
+                </button>
+              )}
+            </div>
+          )}
+
+          <InterventionAuditLog events={auditEvents} />
+        </div>
+      </div>
+    </DashboardLayout>
   );
 }
 
 export default Interventions;
+

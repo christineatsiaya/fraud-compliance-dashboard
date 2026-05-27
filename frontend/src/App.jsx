@@ -16,16 +16,11 @@ import SarAnalytics from "./pages/SarAnalytics";
 
 function AppContent() {
   const location = useLocation();
-  const isDashboard =
-    location.pathname === "/dashboard" ||
-    location.pathname === "/interventions" ||
-    location.pathname === "/methodology" ||
-    location.pathname === "/risk-map" ||
-    location.pathname === "/sar-analytics";
+  const isPublic = location.pathname === "/" || location.pathname === "/about";
 
   return (
     <div className="min-h-screen bg-[#f5f7fa]">
-      {!isDashboard && <Navbar />}
+      {isPublic && <Navbar />}
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<RiskScores />} />
@@ -35,7 +30,7 @@ function AppContent() {
         <Route path="/risk-map" element={<RiskMap />} />
         <Route path="/sar-analytics" element={<SarAnalytics />} />
       </Routes>
-      {!isDashboard && <Footer />}
+      {isPublic && <Footer />}
     </div>
   );
 }

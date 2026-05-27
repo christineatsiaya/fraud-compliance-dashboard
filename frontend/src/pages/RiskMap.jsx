@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import apiClient from "../services/api";
+import DashboardLayout from "../components/DashboardLayout";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
 
@@ -130,7 +131,8 @@ export default function RiskMap() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7fa] p-4">
+    <DashboardLayout>
+      <div className="p-4">
       <div className="mx-auto max-w-[1440px] space-y-4">
         <div className="rounded-xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">
@@ -370,12 +372,13 @@ export default function RiskMap() {
           </section>
         </div>
       </div>
+      </div>
 
       <StateDrilldownDrawer
         state={selectedState}
         states={riskScores}
         onClose={() => setSelectedState(null)}
       />
-    </div>
+    </DashboardLayout>
   );
 }
