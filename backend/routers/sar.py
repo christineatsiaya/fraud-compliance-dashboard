@@ -1,7 +1,12 @@
 from fastapi import APIRouter
 from database import supabase
+from collections import defaultdict
 
 router = APIRouter(prefix="/sar", tags=["SAR Analytics"])
+
+
+def is_state_code(value: str) -> bool:
+    return isinstance(value, str) and len(value) == 2 and value.isalpha()
 
 
 @router.get("/sar-filings")
@@ -23,28 +28,62 @@ async def get_state_filings(state_code: str):
 
 @router.get("/trend-by-year")
 async def trend_by_year():
-    response = supabase.rpc("sar_trend_by_year").execute()
-    return response.data
+    response = supabase.table("sar_filings").select("year, filing_count, state_code").execute()
+
+    totals = defaultdict(int)
+
+    for row in response.data:
+        if is_state_code(row.get("state_code")):
+            totals[row["year"]] += row.get("filing_count", 0)
+
+    return [
+        {"year": year, "filing_count": totals[year]}
+        for year in sorted(totals)
+    ]
 
 
 @router.get("/top-states")
 async def top_states(limit: int = 10):
-    response = supabase.rpc(
-        "sar_top_states",
-        {"limit_count": limit}
+    response = supabase.table("sar_filings").select(
+        "state_code, state_name, filing_count"
     ).execute()
 
-    return response.data
+    totals = defaultdict(lambda: {"state_code": "", "state_name": "", "total_filings": 0})
+
+    for row in response.data:
+        code = row.get("state_code")
+        if is_state_code(code):
+            totals[code]["state_code"] = code
+            totals[code]["state_name"] = row.get("state_name")
+            totals[code]["total_filings"] += row.get("filing_count", 0)
+
+    return sorted(
+        totals.values(),
+        key=lambda x: x["total_filings"],
+        reverse=True,
+    )[:limit]
 
 
 @router.get("/trend-by-state")
 async def trend_by_state(state_code: str):
-    response = supabase.rpc(
-        "sar_trend_by_state",
-        {"state_input": state_code.upper()}
-    ).execute()
+    code = state_code.upper()
+
+    response = (
+        supabase.table("sar_filings")
+        .select("year, filing_count")
+        .eq("state_code", code)
+        .execute()
+    )
+
+    totals = defaultdict(int)
+
+    for row in response.data:
+        totals[row["year"]] += row.get("filing_count", 0)
 
     return {
-        "state_code": state_code.upper(),
-        "trend": response.data
+        "state_code": code,
+        "trend": [
+            {"year": year, "filing_count": totals[year]}
+            for year in sorted(totals)
+        ],
     }
