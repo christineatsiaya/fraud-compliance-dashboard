@@ -23,10 +23,13 @@ export default function SarAnalytics() {
   const [stateTrends, setStateTrends] = useState({});
   const [topStates, setTopStates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [waking, setWaking] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
+        setWaking(true);
         const [yearRes, topRes, ...stateRes] = await Promise.all([
           apiClient.get("/sar/trend-by-year"),
           apiClient.get("/sar/top-states?limit=10"),
@@ -43,12 +46,20 @@ export default function SarAnalytics() {
           trends[code] = stateRes[i].data.trend;
         });
         setStateTrends(trends);
+        setError(null);
       } catch (err) {
         console.error("Error fetching SAR analytics:", err);
+        setError(
+          err.code === "ECONNABORTED"
+            ? "Backend is waking up - please wait a moment and refresh."
+            : "Failed to load SAR analytics data. Please refresh.",
+        );
       } finally {
         setLoading(false);
+        setWaking(false);
       }
     };
+
     fetchAll();
   }, []);
 
@@ -64,9 +75,34 @@ export default function SarAnalytics() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f7fa]">
-        <LoadingSpinner />
-      </div>
+      <DashboardLayout>
+        <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f5f7fa]">
+          <LoadingSpinner />
+          {waking && (
+            <p className="text-sm text-slate-500">
+              Waking up backend - this takes up to 30 seconds on first load...
+            </p>
+          )}
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f5f7fa] p-6">
+          <div className="max-w-md rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 text-center text-sm text-amber-800">
+            {error}
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-[#185FA5] px-5 py-2 text-sm font-semibold text-white hover:bg-[#134c84]"
+          >
+            Retry
+          </button>
+        </div>
+      </DashboardLayout>
     );
   }
 
