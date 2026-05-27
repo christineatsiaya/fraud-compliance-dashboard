@@ -1,0 +1,46 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="28" fill="#F8FAFC"/>
+  <rect x="34" y="34" width="1132" height="652" rx="24" fill="white" stroke="#E2E8F0" stroke-width="2"/>
+  <text x="70" y="88" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700">United States SAR Filing Map</text>
+  <text x="70" y="122" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="18">Geographic reference for state-level suspicious activity filing volume</text>
+
+  <g transform="translate(75 142)">
+    <path d="M211 119L258 90L322 92L384 112L449 103L519 120L578 106L640 116L708 107L770 138L827 160L900 178L951 215L932 257L876 277L821 304L775 343L701 354L625 347L554 369L475 360L406 378L332 367L270 340L213 302L166 270L101 254L80 205L112 160L165 143L211 119Z" fill="#DBEAFE" stroke="#94A3B8" stroke-width="3"/>
+    <path d="M112 160L165 143L211 119L258 90L322 92L318 159L251 171L189 188L125 204L80 205L112 160Z" fill="#FEE2E2" stroke="white" stroke-width="3"/>
+    <path d="M322 92L384 112L449 103L519 120L504 183L437 179L376 166L318 159L322 92Z" fill="#FDBA74" stroke="white" stroke-width="3"/>
+    <path d="M519 120L578 106L640 116L708 107L704 183L634 194L568 184L504 183L519 120Z" fill="#FCD34D" stroke="white" stroke-width="3"/>
+    <path d="M708 107L770 138L827 160L900 178L874 233L811 228L756 199L704 183L708 107Z" fill="#F87171" stroke="white" stroke-width="3"/>
+    <path d="M80 205L125 204L189 188L251 171L270 246L217 281L166 270L101 254L80 205Z" fill="#BFDBFE" stroke="white" stroke-width="3"/>
+    <path d="M251 171L318 159L376 166L437 179L424 256L361 268L299 257L270 246L251 171Z" fill="#FBBF24" stroke="white" stroke-width="3"/>
+    <path d="M437 179L504 183L568 184L634 194L613 282L547 291L486 274L424 256L437 179Z" fill="#FB923C" stroke="white" stroke-width="3"/>
+    <path d="M634 194L704 183L756 199L811 228L782 299L722 310L665 291L613 282L634 194Z" fill="#F97316" stroke="white" stroke-width="3"/>
+    <path d="M811 228L874 233L951 215L932 257L876 277L821 304L775 343L782 299L811 228Z" fill="#DC2626" stroke="white" stroke-width="3"/>
+    <path d="M217 281L270 246L299 257L361 268L332 367L270 340L213 302L217 281Z" fill="#93C5FD" stroke="white" stroke-width="3"/>
+    <path d="M361 268L424 256L486 274L475 360L406 378L332 367L361 268Z" fill="#FDE68A" stroke="white" stroke-width="3"/>
+    <path d="M486 274L547 291L613 282L625 347L554 369L475 360L486 274Z" fill="#FED7AA" stroke="white" stroke-width="3"/>
+    <path d="M613 282L665 291L722 310L782 299L775 343L701 354L625 347L613 282Z" fill="#FDBA74" stroke="white" stroke-width="3"/>
+
+    <path d="M197 444L255 414L329 420L376 459L350 500L286 504L226 486L197 444Z" fill="#BFDBFE" stroke="#94A3B8" stroke-width="3"/>
+    <path d="M878 380L899 401L887 431L852 436L835 411L849 386L878 380Z" fill="#F87171" stroke="#94A3B8" stroke-width="3"/>
+
+    <g font-family="Inter, Arial, sans-serif" font-weight="700" font-size="20">
+      <text x="166" y="178" fill="#7F1D1D">CA</text>
+      <text x="367" y="222" fill="#78350F">TX</text>
+      <text x="846" y="267" fill="#7F1D1D">NY</text>
+      <text x="842" y="416" fill="#7F1D1D">FL</text>
+      <text x="594" y="242" fill="#78350F">IL</text>
+      <text x="696" y="267" fill="#7C2D12">GA</text>
+    </g>
+  </g>
+
+  <g transform="translate(800 455)">
+    <rect width="300" height="144" rx="18" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="22" y="36" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700">SAR filing volume</text>
+    <rect x="22" y="58" width="46" height="14" rx="7" fill="#BFDBFE"/>
+    <text x="82" y="71" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="14">Lower volume</text>
+    <rect x="22" y="88" width="46" height="14" rx="7" fill="#FDBA74"/>
+    <text x="82" y="101" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="14">Elevated volume</text>
+    <rect x="22" y="118" width="46" height="14" rx="7" fill="#DC2626"/>
+    <text x="82" y="131" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="14">Highest filing concentration</text>
+  </g>
+</svg>

@@ -3,6 +3,71 @@ import apiClient from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StateDrilldownDrawer from "../components/StateDrilldownDrawer";
 
+const stateTiles = [
+  ["WA", 1, 0],
+  ["MT", 2, 0],
+  ["ND", 3, 0],
+  ["MN", 4, 0],
+  ["WI", 5, 0],
+  ["MI", 6, 0],
+  ["NY", 8, 0],
+  ["VT", 9, 0],
+  ["NH", 10, 0],
+  ["ME", 11, 0],
+  ["OR", 1, 1],
+  ["ID", 2, 1],
+  ["SD", 3, 1],
+  ["IA", 4, 1],
+  ["IL", 5, 1],
+  ["IN", 6, 1],
+  ["OH", 7, 1],
+  ["PA", 8, 1],
+  ["NJ", 9, 1],
+  ["MA", 10, 1],
+  ["CA", 1, 2],
+  ["NV", 2, 2],
+  ["WY", 3, 2],
+  ["NE", 4, 2],
+  ["MO", 5, 2],
+  ["KY", 6, 2],
+  ["WV", 7, 2],
+  ["VA", 8, 2],
+  ["MD", 9, 2],
+  ["CT", 10, 2],
+  ["AZ", 2, 3],
+  ["UT", 3, 3],
+  ["CO", 4, 3],
+  ["KS", 5, 3],
+  ["AR", 6, 3],
+  ["TN", 7, 3],
+  ["NC", 8, 3],
+  ["SC", 9, 3],
+  ["RI", 10, 3],
+  ["NM", 3, 4],
+  ["OK", 4, 4],
+  ["LA", 5, 4],
+  ["MS", 6, 4],
+  ["AL", 7, 4],
+  ["GA", 8, 4],
+  ["DE", 9, 4],
+  ["AK", 0, 5],
+  ["HI", 1, 5],
+  ["TX", 4, 5],
+  ["FL", 9, 5],
+];
+
+function getFilingColor(filings, maxFilings) {
+  if (!filings || !maxFilings) return "#E2E8F0";
+
+  const ratio = filings / maxFilings;
+
+  if (ratio >= 0.8) return "#B91C1C";
+  if (ratio >= 0.6) return "#EA580C";
+  if (ratio >= 0.4) return "#F59E0B";
+  if (ratio >= 0.2) return "#60A5FA";
+  return "#BFDBFE";
+}
+
 export default function RiskMap() {
   const [filingsData, setFilingsData] = useState([]);
   const [riskScores, setRiskScores] = useState([]);
@@ -37,6 +102,11 @@ export default function RiskMap() {
   const riskByCode = useMemo(
     () => Object.fromEntries(riskScores.map((d) => [d.state_code, d])),
     [riskScores],
+  );
+
+  const filingsByCode = useMemo(
+    () => Object.fromEntries(validFilingsData.map((d) => [d.state_code, d])),
+    [validFilingsData],
   );
 
   const maxFilings = useMemo(
@@ -118,12 +188,129 @@ export default function RiskMap() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <img
-                src="/usa-map.png"
-                alt="Map of the United States with states"
-                className="mx-auto block w-full max-w-4xl rounded-lg bg-white object-contain p-4"
-              />
+            <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-lg bg-white p-4 shadow-inner">
+                <svg
+                  viewBox="0 0 840 460"
+                  role="img"
+                  aria-label="United States map colored by SAR filing volume"
+                  className="mx-auto block w-full max-w-4xl"
+                >
+                  <rect width="840" height="460" rx="18" fill="#FFFFFF" />
+                  {stateTiles.map(([code, col, row]) => {
+                    const filing = filingsByCode[code];
+                    const risk = riskByCode[code];
+                    const filings = filing?.total_filings || 0;
+                    const fill = getFilingColor(filings, maxFilings);
+                    const x = 24 + col * 66;
+                    const y = 34 + row * 60;
+
+                    return (
+                      <g key={code}>
+                        <rect
+                          x={x}
+                          y={y}
+                          width="56"
+                          height="48"
+                          rx="8"
+                          fill={fill}
+                          stroke={risk ? "#FFFFFF" : "#CBD5E1"}
+                          strokeWidth="2"
+                          className="cursor-pointer transition hover:opacity-80"
+                          onClick={() => risk && setSelectedState(risk)}
+                        >
+                          <title>
+                            {filing
+                              ? `${code}: ${filings.toLocaleString()} SAR filings`
+                              : `${code}: no filing data loaded`}
+                          </title>
+                        </rect>
+                        <text
+                          x={x + 28}
+                          y={y + 22}
+                          textAnchor="middle"
+                          fill={filings / maxFilings >= 0.4 ? "#FFFFFF" : "#0F172A"}
+                          fontSize="14"
+                          fontWeight="700"
+                          fontFamily="Inter, Arial, sans-serif"
+                          pointerEvents="none"
+                        >
+                          {code}
+                        </text>
+                        <text
+                          x={x + 28}
+                          y={y + 38}
+                          textAnchor="middle"
+                          fill={filings / maxFilings >= 0.4 ? "#F8FAFC" : "#475569"}
+                          fontSize="10"
+                          fontWeight="600"
+                          fontFamily="Inter, Arial, sans-serif"
+                          pointerEvents="none"
+                        >
+                          {filings ? `${Math.round(filings / 1000)}k` : "n/a"}
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  <g transform="translate(34 405)">
+                    <text
+                      x="0"
+                      y="0"
+                      fill="#475569"
+                      fontSize="12"
+                      fontWeight="700"
+                      fontFamily="Inter, Arial, sans-serif"
+                    >
+                      SAR filing volume
+                    </text>
+                    {[
+                      ["Low", "#BFDBFE"],
+                      ["Moderate", "#60A5FA"],
+                      ["Elevated", "#F59E0B"],
+                      ["High", "#EA580C"],
+                      ["Highest", "#B91C1C"],
+                      ["No data", "#E2E8F0"],
+                    ].map(([label, color], index) => (
+                      <g key={label} transform={`translate(${index * 126} 18)`}>
+                        <rect width="22" height="12" rx="6" fill={color} />
+                        <text
+                          x="30"
+                          y="11"
+                          fill="#64748B"
+                          fontSize="11"
+                          fontFamily="Inter, Arial, sans-serif"
+                        >
+                          {label}
+                        </text>
+                      </g>
+                    ))}
+                  </g>
+                </svg>
+              </div>
+              <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                {validFilingsData.slice(0, 3).map((state) => (
+                  <button
+                    key={state.state_code}
+                    type="button"
+                    onClick={() => {
+                      const risk = riskByCode[state.state_code];
+                      if (risk) setSelectedState(risk);
+                    }}
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50"
+                  >
+                    <p className="text-xs font-semibold text-slate-900">
+                      {state.state_code} filings
+                    </p>
+                    <p className="mt-1 text-lg font-semibold text-blue-700">
+                      {state.total_filings.toLocaleString()}
+                    </p>
+                    <p className="text-[11px] text-slate-400">
+                      {state.state_name}
+                    </p>
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
 
