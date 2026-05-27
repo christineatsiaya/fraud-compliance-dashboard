@@ -1,161 +1,302 @@
-# Fraud Compliance Dashboard
+# FinCEN Guard - Fraud Compliance Dashboard
 
-A full-stack fraud compliance intelligence platform built with React, FastAPI, and Supabase. The project explores the "SAR gap": the disconnect between suspicious activity reporting volume and the regulator-ready intelligence needed to prioritize enforcement, controls, and fraud disruption.
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://fraud-compliance-dashboard.vercel.app/)
+[![Tech Stack](https://img.shields.io/badge/stack-React%20%7C%20FastAPI%20%7C%20Supabase-blue)]()
 
-**Live demo:** Deployed as a Vercel frontend with a Render-hosted FastAPI API.
+**Tech Stack:** React - Vite - FastAPI - Python - Supabase - PostgreSQL - Recharts - Axios - Tailwind CSS - OpenAI-ready AI Copilot
+
+---
+
+## Overview
+
+FinCEN Guard is a full-stack fraud compliance intelligence platform that helps compliance teams identify suspicious activity reporting blind spots, prioritize state-level risk, and translate SAR filing gaps into operational interventions.
+
+The platform turns fragmented compliance signals into an executive-ready dashboard for regulated-industry decision-making. It combines SAR filing analytics, state risk scoring, intervention recommendations, role-based views, and an AI copilot experience in one workflow.
+
+The platform enables compliance teams and reviewers to:
+
+- Monitor state-level fraud and compliance risk scores
+- Compare SAR filing gaps across U.S. states
+- View SAR filing volume through a geographic risk map
+- Analyze national and state-level SAR filing trends
+- Prioritize recommended compliance interventions
+- Switch between Executive, Analyst, and Operations views
+- Export reports and CSV data for leadership review
+- Ask plain-English compliance questions through an AI copilot interface
+
+**Live Demo:** [https://fraud-compliance-dashboard.vercel.app/](https://fraud-compliance-dashboard.vercel.app/)
+
+The demo includes a guided "Try Demo" tour, API-backed dashboard pages, role-based dashboard views, SAR analytics, intervention workflow controls, and fallback demo data if the backend is waking up.
+
+## Demo Access
+
+The live demo is public and does not require login credentials.
+
+If the Render backend is cold, the frontend may show a wake-up message or fallback demo data while the API starts. This is expected for free-tier deployment.
+
+---
+
+## Why I Built This
+
+Suspicious Activity Reports are one of the core tools used in anti-money laundering and fraud compliance, but filing volume alone does not tell teams where to focus. Compliance teams need to understand where reporting gaps, high-volume jurisdictions, operational exposure, and intervention priorities intersect.
+
+I built FinCEN Guard to demonstrate how analytics engineering and full-stack product design can support regulated-industry decision-making. Instead of building a generic dashboard, I chose a domain with real business stakes: BSA/SAR compliance, state-level fraud monitoring, and regulator-ready risk intelligence.
+
+The goal was to build a production-style analytics application that shows:
+
+- Technical depth through a real frontend, backend, database, and deployed API
+- Product thinking through role-specific dashboard views
+- Domain fluency through FinCEN, SAR, BSA, risk tiers, and intervention framing
+- Data storytelling through dashboards, maps, KPIs, and guided demo flows
+- AI readiness through a compliance copilot interface
+
+This project was designed for portfolio review by analytics, fintech, banking, healthcare compliance, and risk intelligence teams.
+
+---
 
 ## Screenshots
 
-### Live Demo Entry
+## Landing Page
 
-![Dashboard landing page](docs/screenshots/home.png)
+Public-facing overview with a direct live demo entry point.
 
-### About This Project
+![Landing Page](docs/screenshots/home.png)
 
-![About page](docs/screenshots/about.png)
+---
 
-### Risk Scores
+## Risk Scores Dashboard
 
-![Risk scores dashboard](docs/screenshots/risk-scores.png)
+State-level risk scoring dashboard with live data status, KPIs, filters, exports, role switching, and AI copilot.
 
-### Recommended Interventions
+![Risk Scores Dashboard](docs/screenshots/risk-scores.png)
 
-![Interventions dashboard](docs/screenshots/interventions.png)
+---
 
-### State Drilldown
+## Recommended Interventions
 
-![State drilldown drawer](docs/screenshots/state-drilldown.png)
+Compliance action queue with priority levels, confidence scores, regulatory citations, and workflow status controls.
 
-### Methodology
+![Interventions Dashboard](docs/screenshots/interventions.png)
 
-![Methodology page](docs/screenshots/methodology.png)
+---
 
-## What This Dashboard Does
+## State Drilldown
 
-- Scores state-level fraud and compliance risk.
-- Groups states into high, medium, and low risk tiers.
-- Estimates revenue at risk by state.
-- Recommends compliance interventions with priority levels.
-- Includes regulatory citations and confidence scores.
-- Supports filtering, searching, sorting, chart review, and CSV export.
-- Provides role-specific dashboard views for Executive, Analyst, and Operations users.
-- Includes a guided demo tour for recruiters and reviewers.
-- Shows a U.S. SAR filing map and SAR trend analytics from API-backed data.
-- Presents the project context through a landing page for evaluators and users.
-- Falls back to labeled demo data when the live API is unavailable during local review.
-- Adds an executive intelligence feed that summarizes the current risk picture.
-- Supports state drilldowns with explanation, peer rank, exposure, and recommended action.
-- Documents the scoring model on a dedicated methodology page.
+State-level drawer showing risk explanation, revenue exposure, peer context, and recommended next action.
 
-## What I Built
+![State Drilldown](docs/screenshots/state-drilldown.png)
 
-- React dashboard architecture with shared dashboard layout, responsive sidebar, route-level pages, and role-based views.
-- FastAPI backend endpoints for risk scores, interventions, SAR filing analytics, and state-level drilldowns.
-- Supabase-backed persistence for demo portfolio records and SAR filing data.
-- Risk scoring, intervention workflow, export, demo fallback, and AI copilot interaction patterns.
-- Deployment-ready frontend and backend configuration for Vercel and Render.
+---
 
-## Why It Matters
+## Methodology
 
-Suspicious Activity Reports are essential to anti-fraud oversight, but high filing volume does not automatically translate into rapid disruption. Institutions may file defensive or low-specificity SARs, regulators face constrained review capacity, and weak prioritization can leave severe patterns hidden in plain sight.
+Transparent explanation of scoring assumptions, risk tiers, exposure framing, and current model limitations.
 
-This project treats the SAR gap as both a policy problem and a product design problem: how can a compliance tool help analysts move from reporting volume to prioritized action?
+![Methodology Page](docs/screenshots/methodology.png)
 
-## Tech Stack
+---
 
-| Layer | Technology |
+## Business Problem
+
+Fraud and compliance teams often face fragmented workflows:
+
+- **SAR filing data** is available, but hard to translate into action
+- **State-level exposure** is difficult to compare consistently
+- **Risk reporting** often lives in spreadsheets or static slide decks
+- **Operational recommendations** are disconnected from analytics
+- **Executives, analysts, and operations teams** need different levels of detail
+- **AI adoption** is expected, but needs structured guardrails in regulated domains
+
+These gaps create:
+
+- Slow compliance triage
+- Weak prioritization of high-risk jurisdictions
+- Limited visibility into filing blind spots
+- Manual reporting overhead
+- Poor translation from analytics to intervention
+
+FinCEN Guard addresses this by combining data ingestion, scoring, visualization, workflow recommendations, and role-based intelligence in one dashboard experience.
+
+---
+
+## Key Features
+
+### Multi-Role Dashboard Experience
+
+| Role | Key Capabilities |
 | --- | --- |
-| Frontend | React, React Router, Tailwind CSS, Recharts, Axios, Vite |
-| Backend | FastAPI, Python |
-| Database | Supabase |
-| Analytics | Risk scoring and intervention service modules |
-| Prototype support | Streamlit |
-| Deployment targets | Vercel frontend, Render backend |
+| **Executive** | Portfolio KPIs, revenue exposure, executive intelligence feed, leadership-level risk summary |
+| **Analyst** | Filters, drilldowns, methodology, state-level evidence, AI copilot access |
+| **Operations** | Intervention workflow, recommended actions, status tracking, operational follow-through |
 
-## Project Structure
+### SAR Risk Intelligence Workflow
+
+**End-to-End Pipeline:**
 
 ```text
-fraud-compliance-dashboard/
-  backend/
-    main.py
-    database.py
-    routers/
-    services/
-    tests/
-  frontend/
-    src/
-      components/
-      pages/
-      services/
-      assets/
-    public/
-  docs/
-    PROJECT_DOCUMENTATION.md
-    screenshots/
-  streamlit/
-  README.md
+SAR Filing Data -> Risk Score Calculation -> State Dashboard
+-> AI Copilot Insight -> Intervention Recommendation -> Exportable Report
 ```
 
-## Application Routes
+This workflow:
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Public landing page and live demo entry point |
-| `/dashboard` | Main risk score dashboard with KPI cards, filters, drilldowns, exports, and copilot |
-| `/risk-map` | U.S. state-level SAR filing map |
-| `/sar-analytics` | SAR filing trend analytics and top-state comparisons |
-| `/interventions` | Recommended compliance interventions dashboard |
-| `/about` | Project explanation, SAR gap context, architecture, and workflow |
-| `/methodology` | Risk formula, tier thresholds, assumptions, and limitations |
+- Converts filing gaps into normalized risk scores
+- Separates compliance risk from estimated revenue exposure
+- Flags high-risk states for review
+- Provides intervention recommendations with confidence scores
+- Supports executive review and analyst investigation
 
-## API Endpoints
+### Business Intelligence Dashboards
 
-| Method | Endpoint | Description |
+Real-time dashboard areas include:
+
+- State-level risk scores
+- SAR filing gap metrics
+- Revenue at risk estimates
+- U.S. SAR filing map
+- National SAR filing trend analytics
+- Top-state filing comparisons
+- Recommended intervention queue
+- Executive intelligence feed
+- AI copilot response panel
+
+---
+
+## Technical Architecture
+
+```text
+Landing Page
+Risk Dashboard
+Risk Map
+SAR Analytics
+Interventions
+Reports
+    |
+    v
+React + Vite Frontend
+    |
+    v
+FastAPI Backend API
+    |
+    +--> Supabase PostgreSQL
+    +--> Risk Scoring Engine
+    +--> Intervention Engine
+```
+
+### Frontend - React + Vite
+
+- **Route-based dashboard architecture** with React Router
+- **Shared DashboardLayout** for consistent desktop, tablet, and mobile navigation
+- **Responsive sidebar** with collapse behavior and mobile drawer
+- **Role-based dashboard views** for executive, analyst, and operations workflows
+- **Reusable cards, tables, charts, drawers, and export controls**
+- **Guided Try Demo tour** for recruiters and reviewers
+- **API state handling** with loading, fallback, and backend wake-up messaging
+
+### Backend - FastAPI + Python
+
+REST-style API architecture supporting:
+
+- Risk score retrieval and calculation
+- SAR filing trend endpoints
+- Top-state filing volume endpoints
+- State-level SAR history
+- Intervention recommendations
+- Backend health checks
+
+**Key Design Priorities:**
+
+- Clear service boundaries for risk scoring and intervention logic
+- API-backed dashboard data instead of static frontend-only mockups
+- Deployment-ready backend for Render
+- Demo seed workflow for Supabase-backed portfolio data
+
+### Database - Supabase PostgreSQL
+
+Core tables:
+
+- `states` - U.S. state reference data and regional classification
+- `sar_filings` - SAR filing counts by state, year, and industry
+- `risk_scores` - Computed state risk score, tier, and revenue exposure
+- `interventions` - Recommended actions, priority, citations, and confidence scores
+
+The database supports state-level analytics, intervention workflows, and dashboard drilldowns.
+
+### Analytics and Scoring
+
+The backend risk engine compares actual SAR filing counts against expected filing counts:
+
+```text
+gap_percentage = ((expected_count - filing_count) / expected_count) * 100
+risk_score = clamp(gap_percentage, 0, 100)
+```
+
+Risk tiers:
+
+| Score Range | Tier | Operational Meaning |
 | --- | --- | --- |
-| `GET` | `/health` | Backend health check |
-| `GET` | `/states` | Fetch state reference data |
-| `GET` | `/risk/risk-scores` | Fetch saved risk scores |
-| `POST` | `/risk/risk-scores/calculate` | Trigger risk score calculation |
-| `GET` | `/interventions/` | Fetch all recommended interventions |
-| `GET` | `/interventions/{state_code}` | Fetch interventions for one state |
-| `POST` | `/interventions/generate` | Generate intervention recommendations |
+| `0-30` | Low | Baseline monitoring |
+| `30.01-60` | Medium | Targeted monitoring |
+| `60.01-100` | High | Immediate review |
 
-## Database Tables
+Revenue at risk is modeled separately so the compliance signal and business-impact estimate remain explainable.
 
-| Table | Purpose |
-| --- | --- |
-| `states` | Stores US states and regional classification |
-| `sar_filings` | Stores actual and expected SAR filing counts by state and year |
-| `risk_scores` | Stores computed state risk score, risk tier, and revenue at risk |
-| `interventions` | Stores recommended compliance actions, priority levels, citations, and confidence scores |
+---
 
-## Local Setup
+## Engineering Highlights
+
+### API-Backed Portfolio Demo
+
+The deployed dashboard reads from Supabase through FastAPI endpoints and shows live sync status. A broader 15-state seed dataset is included so the dashboard has meaningful risk distribution instead of looking like a static mockup.
+
+### Shared Dashboard Layout
+
+Built a reusable `DashboardLayout` component so Dashboard, Risk Map, SAR Analytics, Interventions, and Reports all share consistent navigation, collapse behavior, mobile responsiveness, and demo tour access.
+
+### Role-Based Product Thinking
+
+Implemented Executive, Analyst, and Operations views to show how the same data can be repackaged for different stakeholders. This demonstrates product judgment beyond basic dashboard construction.
+
+### SAR Filing Map
+
+Created a state-level SAR filing map that colors all U.S. states based on loaded filing volume, making geographic concentration easier to understand at a glance.
+
+### Intervention Workflow
+
+Designed an action queue that translates risk intelligence into recommended compliance interventions with priority levels, confidence scores, regulatory citations, and status controls.
+
+### Backend Cold-Start Handling
+
+Updated the shared Axios client timeout and SAR Analytics loading/error states so Render free-tier cold starts do not silently produce blank charts.
+
+### AI Copilot Interface
+
+Added a structured AI copilot panel that lets reviewers ask plain-English questions about states, risk drivers, recommended actions, and portfolio priorities.
+
+---
+
+## Quick Start
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 18+
 - Python 3.11+
-- Supabase project credentials
+- Supabase project
+- Render or local FastAPI runtime
 
-### Frontend
+### Local Setup
 
 ```bash
+# Clone repository
+git clone https://github.com/christineatsiaya/fraud-compliance-dashboard
+cd fraud-compliance-dashboard
+
+# Frontend setup
 cd frontend
 npm install
 npm run dev
-```
 
-By default, the frontend expects the backend at `http://localhost:8000`. To point it elsewhere, create `frontend/.env`:
-
-```bash
-VITE_API_BASE_URL=http://localhost:8000
-```
-
-If the backend is unavailable, the Risk Scores and Interventions pages display labeled demo data so the dashboard can still be reviewed locally.
-
-### Backend
-
-```bash
+# Backend setup in a second terminal
 cd backend
 python -m venv .venv
 .venv\Scripts\activate
@@ -163,99 +304,176 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-The backend expects Supabase configuration in environment variables used by `backend/database.py`.
+Visit `http://localhost:5173`.
+
+### Environment Variables
+
+Frontend `.env`:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+Backend environment variables:
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_key
+```
 
 ### Seed Demo Data
 
-After configuring `backend/.env`, seed Supabase with portfolio demo records:
+After configuring Supabase credentials:
 
 ```bash
 cd backend
 python seed_demo_data.py
 ```
 
-This writes a broader 15-state risk-score portfolio and intervention queue to `risk_scores` and `interventions`, so the deployed frontend can show real API-backed data instead of relying on local fallback data. Re-run this after creating or replacing a Supabase project.
+This writes a 15-state risk-score portfolio and intervention queue to Supabase so the deployed frontend shows meaningful API-backed demo data.
 
-## Methodology
-
-The backend risk engine compares actual SAR filings against expected SAR filings for each state:
-
-```text
-gap percentage = ((expected_count - filing_count) / expected_count) * 100
-risk score = gap percentage clamped from 0 to 100
-```
-
-Risk tiers are assigned from the score:
-
-| Score range | Tier |
-| --- | --- |
-| `0-30` | Low |
-| `30.01-60` | Medium |
-| `60.01-100` | High |
- 
-Revenue at risk is stored as a separate estimated exposure field so the prototype can tune the business-impact model independently from the filing-gap score.
-
-The live dashboard also includes a state drilldown drawer. Selecting a state exposes its peer rank, risk explanation, revenue exposure, and recommended next action.
-
-## Verification
-
-Run frontend checks:
-
-```bash
-cd frontend
-npm run lint
-npm run build
-```
-
-Run backend tests:
-
-```bash
-cd backend
-pytest
-```
-
-## Documentation
-
-Detailed documentation is available in [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md).
-
-## Current Status
-
-This is an MVP-stage full-stack prototype with deployed frontend/backend workflows, API-backed demo data, responsive dashboard navigation, SAR analytics, intervention workflow controls, and documented methodology. The next phase is to strengthen backend test coverage, add authentication, and expand institution-level data modeling.
-
-## Roadmap
-
-- Add frontend component tests.
-- Add stronger backend tests around risk and intervention engines.
-- Add authentication for protected analyst workflows.
-- Add deployment-specific environment documentation.
-- Add state detail pages with risk history and intervention status.
+---
 
 ## Deployment
 
-### Frontend on Vercel
+### Frontend - Vercel
 
-Deploy the `frontend/` directory as the Vercel project root.
-
-Required setting:
+- Deployed as a Vite React app
+- Production URL: [https://fraud-compliance-dashboard.vercel.app/](https://fraud-compliance-dashboard.vercel.app/)
+- Required environment variable:
 
 ```bash
 VITE_API_BASE_URL=https://your-render-api-url.onrender.com
 ```
 
-The frontend includes `frontend/vercel.json` for Vite build output and client-side route rewrites.
+### Backend - Render
 
-### Backend on Render
+- FastAPI app deployed on Render
+- Supabase credentials configured in Render environment variables
+- Free-tier cold starts are handled with a longer frontend timeout and visible loading messaging
 
-Render can use `render.yaml` from the repository root. Add these environment variables in Render:
+---
 
-```bash
-SUPABASE_URL=your-supabase-project-url
-SUPABASE_KEY=your-supabase-service-or-anon-key
-```
+## Use Cases
 
-After deploying the backend, run the seed script locally once against the same Supabase project:
+### Banking and Fintech Compliance Teams
 
-```bash
-cd backend
-python seed_demo_data.py
-```
+- Identify SAR filing blind spots
+- Prioritize high-risk jurisdictions
+- Translate analytics into operational interventions
+- Produce leadership-ready risk summaries
+
+### Healthcare and Regulated Operations Teams
+
+- Monitor fraud risk across regions
+- Track suspicious activity patterns
+- Build repeatable intervention workflows
+- Support audit-ready reporting
+
+### Analytics and Risk Intelligence Teams
+
+- Combine API-backed data with business intelligence dashboards
+- Visualize geographic risk concentration
+- Explore state-level risk drivers
+- Prototype AI-assisted compliance workflows
+
+---
+
+## Future Enhancements
+
+Strategic roadmap priorities:
+
+### Institution-Level Data Modeling
+
+Expand from state-level scoring to institution-level filing behavior, peer benchmarking, and risk normalization.
+
+### Authentication and Protected Workflows
+
+Add Supabase Auth or OAuth-based login for analyst, operations, and executive users.
+
+### Advanced Risk Forecasting
+
+Add time-series risk movement, intervention impact simulation, and SAR filing velocity detection.
+
+### AI Compliance Workbench
+
+Connect the copilot to richer state context, methodology references, and structured report generation.
+
+### Production Reporting
+
+Generate downloadable PDF or HTML executive reports with selected filters, state drilldowns, and intervention history.
+
+---
+
+## Technical Concepts Demonstrated
+
+This project showcases practical implementation of:
+
+- Full-stack analytics application development
+- React dashboard architecture
+- FastAPI backend API design
+- Supabase PostgreSQL persistence
+- Risk scoring and analytics modeling
+- Recharts-based KPI visualization
+- Responsive dashboard navigation
+- Role-based dashboard presentation
+- API loading, fallback, and cold-start handling
+- CSV and report export workflows
+- Compliance-domain product framing
+- AI-assisted analytics interface design
+- Vercel and Render deployment patterns
+
+---
+
+## Lessons Learned
+
+Building FinCEN Guard provided hands-on experience with:
+
+1. **Domain-Driven Analytics** - A dashboard is stronger when it is grounded in a real regulated-industry problem rather than generic sample data.
+
+2. **Full-Stack Data Flow** - Building the frontend, backend, and Supabase layer together made API contracts, loading states, and deployment behavior much more concrete.
+
+3. **Product Framing** - Executive, Analyst, and Operations users need different views of the same underlying data.
+
+4. **Deployment Reality** - Render free-tier cold starts require thoughtful timeout handling and visible user feedback.
+
+5. **Data Storytelling** - Recruiters and stakeholders need the README, landing page, and demo data to tell the same story as the code.
+
+The project reinforced that strong analytics software combines technical execution, domain fluency, and clear product storytelling.
+
+---
+
+## Author
+
+**Christine Rita Akinyi**  
+MS Business Analytics - Montclair State University
+
+**Areas of Interest:**
+
+- Analytics Engineering
+- Risk Intelligence Systems
+- Fraud and Compliance Analytics
+- Full-Stack Analytics Applications
+- SaaS Platforms and Product Development
+- Business Analytics and Data Visualization
+
+**Connect:**
+
+- GitHub: [@christineatsiaya](https://github.com/christineatsiaya)
+
+---
+
+## License
+
+MIT License - feel free to use this project for learning or as a foundation for your own compliance analytics dashboard.
+
+---
+
+## Acknowledgments
+
+Built with inspiration from modern compliance intelligence platforms, fraud analytics workflows, and enterprise risk dashboards. Special thanks to the open-source community for the tools that made this project possible.
+
+---
+
+**If you found this project helpful, please consider giving it a star.**
+
