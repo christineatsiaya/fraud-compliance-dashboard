@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import DemoTour from "./DemoTour";
 
 const NAV = [
   {
@@ -44,6 +45,7 @@ export default function DashboardLayout({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -88,6 +90,23 @@ export default function DashboardLayout({
       </div>
 
       <div className="flex-1 overflow-y-auto py-2">
+        <div className="px-2 py-1">
+          <button
+            type="button"
+            onClick={() => {
+              setTourOpen(true);
+              setMobileOpen(false);
+            }}
+            className="flex w-full items-center gap-2 rounded-md border border-blue-100 bg-blue-50 px-2 py-2 text-left text-sm font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100"
+            title={collapsed ? "Try Demo" : undefined}
+          >
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white text-[11px] font-bold text-blue-700">
+              ?
+            </span>
+            {!collapsed && <span>Try Demo</span>}
+          </button>
+        </div>
+
         {NAV.map(({ section, items }) => (
           <div key={section} className="px-2 py-1">
             {!collapsed && (
@@ -221,7 +240,13 @@ export default function DashboardLayout({
             FinCEN Guard
           </span>
         </div>
-        <div className="w-8" />
+        <button
+          type="button"
+          onClick={() => setTourOpen(true)}
+          className="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700"
+        >
+          Try Demo
+        </button>
       </div>
 
       {mobileOpen && (
@@ -254,6 +279,8 @@ export default function DashboardLayout({
       </div>
 
       <div className="lg:hidden">{children}</div>
+
+      <DemoTour open={tourOpen} onClose={() => setTourOpen(false)} />
     </div>
   );
 }
